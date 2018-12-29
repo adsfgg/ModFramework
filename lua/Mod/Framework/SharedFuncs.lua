@@ -91,7 +91,7 @@ function ModPrint(msg, vm, debug)
 
 	assert(current_vm ~= "")
 
-	local str = string.format("[%s (%s%s) ] %s", kModName, current_vm, debug_str, msg)
+	local str = string.format("[%s (%s%s)] %s", kModName, current_vm, debug_str, msg)
 
 	if not vm then
 		Shared.Message(str)
