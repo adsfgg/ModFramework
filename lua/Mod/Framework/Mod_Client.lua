@@ -13,3 +13,5 @@ for i = 1, #Modules do
 end
 
 ModPrintDebug("Client files loaded.", "Client")
+
+ModPrint("Version: v" .. kModVersion .. "." .. kModBuild .. " loaded", "Server")
