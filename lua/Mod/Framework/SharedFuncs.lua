@@ -39,7 +39,7 @@ local kBuildToChange = {}
 local kPassiveToRemove = {}
 local kPassiveToChange = {}
 
--- special 
+-- special
 local kSpecialToRemove = {}
 local kSpecialToChange = {}
 
@@ -97,17 +97,26 @@ function ModPrint(msg, vm, debug)
 		Shared.Message(str)
 	elseif vm == "Server" and Server
 		or vm == "Client" and Client
-		or vm == "Predict" and Predict 
+		or vm == "Predict" and Predict
 		or vm == "all" then
-		
+
 		Shared.Message(str)
 	end
-end	
+end
 
 function ModPrintDebug(msg, vm)
 	if kAllowModDebugMessages then
 		ModPrint(msg, vm, true)
 	end
+end
+
+function ModPrintVersion(vm)
+	local version = GetModVersion()
+	ModPrint("Version: " .. version .. " loaded", vm)
+end
+
+function GetModVersion()
+	return "v" .. kModVersion .. "." .. kModBuild;
 end
 
 function FormatDir(path, vm)
@@ -117,10 +126,11 @@ end
 -- ktechids
 
 function AddTechId(techId)
+	ModPrintDebug("Adding techId: " .. techId, "all")
 	AppendToEnum(kTechId, techId)
 end
 
--- setters
+-- setters (or inserters =])
 
 function AddTechIdToMaterialOffset(techId, offset)
 	table.insert(kTechIdToMaterialOffsetAdditions, {techId, offset})
@@ -137,7 +147,7 @@ function AddAlienTechmapTech(techId, x, y)
 end
 
 function DeleteAlienTechmapTech(techId)
-	table.insert(kAlienTechmapTechToRemove, techId, true ) 
+	table.insert(kAlienTechmapTechToRemove, techId, true )
 end
 
 function ChangeAlienTechmapLine(oldLine, newLine)
@@ -163,7 +173,7 @@ function AddMarineTechmapTech(techId, x, y)
 end
 
 function DeleteMarineTechmapTech(techId)
-	table.insert(kMarineTechmapTechToRemove, techId, true ) 
+	table.insert(kMarineTechmapTechToRemove, techId, true )
 end
 
 function ChangeMarineTechmapLine(oldLine, newLine)
@@ -220,8 +230,8 @@ function ChangeResearch(techId, prereq1, prereq2, addOnTechId)
 	table.insert(kResearchToChange, techId, { techId, prereq1, prereq2, addOnTechId } )
 end
 
-function AddResearchNode(techId, prereq1, prereq2, addOnTechId, after)
-	table.insert(kResearchToAdd, { techId, prereq1, prereq2, addOnTechId, after } )
+function AddResearchNode(techId, prereq1, prereq2, addOnTechId)
+	table.insert(kResearchToAdd, { techId, prereq1, prereq2, addOnTechId } )
 end
 
 -- targeted activation
@@ -300,8 +310,8 @@ function ChangeActivation(techId, prereq1, prereq2)
 	table.insert(kActivationToChange, techId, { techId, prereq1, prereq2 } )
 end
 
-function AddActivation(techId, prereq1, prereq2, afterTech)
-	table.insert(kActivationToAdd, { techId, prereq1, prereq2, afterTech } )
+function AddActivation(techId, prereq1, prereq2)
+	table.insert(kActivationToAdd, { techId, prereq1, prereq2 } )
 end
 
 -- targeted buy nodes
