@@ -1,8 +1,11 @@
 local framework_version = "0"
-local framework_build = "1"
+local framework_build = "2"
 Mod = {}
 
 function Mod:Initialise(kModName)
+
+    -- just in case :))
+    assert(kModName and type(kModName) == "string")
 
     local current_vm = Client and "Client" or Server and "Server" or Predict and "Predict" or "Unknown"
 
@@ -74,6 +77,9 @@ end
 -- Original author: https://forums.unknownworlds.com/discussion/comment/2178874#Comment_2178874
 function Mod:GetLocalVariable(originalFunction, localName)
 
+    assert(originalFunction and type(originalFunction) == "function")
+    assert(localName and type(localName) == "string")
+
     local index = 1
     while true do
 
@@ -90,12 +96,18 @@ function Mod:GetLocalVariable(originalFunction, localName)
 
     end
 
+    self:PrintDebug("Local variable \"" .. localName .. "\" not found")
+
     return nil
 
 end
 
 -- Append new value to enum
 function Mod:AppendToEnum(tbl, key)
+
+    assert(type(tbl) == "table")
+    assert(key)
+
     if rawget(tbl,key) then
         self:PrintDebug("Key already exists in enum.")
         self.PrintCallStack()
@@ -114,11 +126,11 @@ function Mod:AppendToEnum(tbl, key)
 
         -- delete old max
         rawset(tbl, rawget(tbl, maxVal), nil)
-        rawset( tbl, maxVal, nil )
+        rawset(tbl, maxVal, nil)
 
         -- move max down
-		rawset( tbl, 'Max', maxVal-1 )
-		rawset( tbl, maxVal-1, 'Max' )
+		rawset(tbl, 'Max', maxVal-1)
+		rawset(tbl, maxVal-1, 'Max')
     else
         for k, v in next, tbl do
             if type(v) == "number" and v > maxVal then
@@ -128,24 +140,35 @@ function Mod:AppendToEnum(tbl, key)
         maxVal = maxVal + 1
     end
 
-    rawset( tbl, key, maxVal )
-    rawset( tbl, maxVal, key )
+    rawset(tbl, key, maxVal)
+    rawset(tbl, maxVal, key)
+
 end
 
 -- Update value in enum
 function Mod:UpdateEnum(tbl, key, value)
-  if rawget(tbl, key) == nil then
-    self:PrintDebug("Error updating enum: key doesn't exist in table.")
-    self.PrintCallStack()
-    return
-  end
 
-  rawset(tbl, rawget(tbl, key), value)
-  rawset( tbl, key, value )
+    assert(tbl and type(tbl) == "table")
+    assert(key)
+    assert(value)
+
+    if rawget(tbl, key) == nil then
+        self:PrintDebug("Error updating enum: key doesn't exist in table.")
+        self.PrintCallStack()
+        return
+    end
+
+    rawset(tbl, rawget(tbl, key), value)
+    rawset(tbl, key, value)
+
 end
 
 -- Delete key from enum
-function Mod:RemoveFromEnum( tbl, key )
+function Mod:RemoveFromEnum(tbl, key)
+
+    assert(tbl and type(tbl) == "table")
+    assert(key)
+
 	if rawget(tbl,key) == nil then
         self:PrintDebug("Cannot delete value from enum: key doesn't exist in table.")
         self.PrintCallStack()
@@ -153,20 +176,23 @@ function Mod:RemoveFromEnum( tbl, key )
 	end
 
     rawset(tbl, rawget(tbl, key), nil)
-    rawset( tbl, key, nil )
+    rawset(tbl, key, nil)
 
 	local maxVal = 0
 	if tbl == kTechId then
+
 		maxVal = tbl.Max
 
         -- delete old max
         rawset(tbl, rawget(tbl, maxVal), nil)
-        rawset( tbl, maxVal, nil )
+        rawset(tbl, maxVal, nil)
 
         -- move max down
-		rawset( tbl, 'Max', maxVal-1 )
-		rawset( tbl, maxVal-1, 'Max' )
+		rawset(tbl, 'Max', maxVal-1)
+		rawset(tbl, maxVal-1, 'Max')
+
 	end
+
 end
 
 function Mod:PrintCallStack()
@@ -175,8 +201,12 @@ end
 
 -- Shared.Message wrapper
 function Mod:Print(str, level, vm)
-    assert(str)
+
+    assert(str and type(str) == "string")
+
     level = level or self.kLogLevels.info
+
+    assert(type(level) == "table")
 
     if self.config.kLogLevel.level < level.level then
         return
@@ -194,6 +224,7 @@ function Mod:Print(str, level, vm)
 
 		Shared.Message(msg)
 	end
+
 end
 
 -- Debug print
@@ -214,11 +245,8 @@ end
 
 -- Returns the relative ns2 path used to find lua files from the given module and vm
 function Mod:FormatDir(module, vm)
-  assert(module)
-  assert(vm)
-
-  assert(type(module) == "string")
-  assert(type(vm) == "string")
+  assert(module and type(module) == "string")
+  assert(vm and type(vm) == "string")
 
   return string.format("lua/%s/%s/%s/*.lua", self.config.kModName, module, vm)
 end
