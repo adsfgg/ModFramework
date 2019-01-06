@@ -18,7 +18,7 @@ function Mod:Initialise(kModName)
 
     if _G[kModName] then
         Mod = _G[kModName]
-        Mod:Print("Skipped loading framework " .. Mod:GetFrameworkVersionPrintable(), kLogLevels.info)
+        Shared.Message(string.format("[%s - %s] Skipped loading framework %s", kModName, current_vm, Mod:GetFrameworkVersionPrintable()))
         return
     end
 
