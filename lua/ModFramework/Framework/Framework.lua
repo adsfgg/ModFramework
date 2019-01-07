@@ -12,8 +12,8 @@ function Mod:Initialise(kModName)
     local kLogLevels = {
         fatal = {display="Fatal", level=0},
         error = {display="Error", level=1},
-        warn = {display="Warn", level=2},
-        info = {display="Info", level=3},
+        warn  = {display="Warn",  level=2},
+        info  = {display="Info",  level=3},
         debug = {display="Debug", level=4},
     }
 
