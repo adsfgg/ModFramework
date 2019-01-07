@@ -1,8 +1,10 @@
 local framework_version = "0"
-local framework_build = "2"
-Mod = {}
+local framework_build = "3"
+local Mod = {}
 
-function Mod:Initialise(kModName)
+function Mod:Initialise()
+
+    local kModName = debug.getinfo(1, "S").source:gsub("@lua/", ""):gsub("/Framework/.*%.lua", "")
 
     -- just in case :))
     assert(kModName and type(kModName) == "string")
@@ -17,59 +19,58 @@ function Mod:Initialise(kModName)
         debug = {display="Debug", level=4},
     }
 
-    Shared.Message(string.format("[%s - %s] Loading framework %s", kModName, current_vm, Mod:GetFrameworkVersionPrintable()))
+    Shared.Message(string.format("[%s - %s] Loading framework %s", kModName, current_vm, self:GetFrameworkVersionPrintable()))
 
     if _G[kModName] then
         Mod = _G[kModName]
-        Shared.Message(string.format("[%s - %s] Skipped loading framework %s", kModName, current_vm, Mod:GetFrameworkVersionPrintable()))
+        Shared.Message(string.format("[%s - %s] Skipped loading framework %s", kModName, current_vm, self:GetFrameworkVersionPrintable()))
         return
     end
 
-    Mod.kLogLevels = kLogLevels
+    self.kLogLevels = kLogLevels
 
     Script.Load("lua/" .. kModName .. "/Config.lua")
 
     assert(GetModConfig, string.format("[%s - %s] (%s) Config.lua malformed. Missing GetModConfig function.", kModName, current_vm, kLogLevels.fatal.display))
 
-    Mod.config = GetModConfig(kLogLevels)
+    self.config = GetModConfig(kLogLevels)
 
-    assert(Mod.config, string.format("[%s - %s] (%s) Config.lua malformed. GetModConfig doesn't return anything.", kModName, current_vm, kLogLevels.fatal.display))
-    assert(type(Mod.config) == "table", string.format("[%s - %s] (%s) Config.lua malformed. GetModConfig doesn't return expected type.", kModName, current_vm, kLogLevels.fatal.display))
+    assert(self.config, string.format("[%s - %s] (%s) Config.lua malformed. GetModConfig doesn't return anything.", kModName, current_vm, kLogLevels.fatal.display))
+    assert(type(self.config) == "table", string.format("[%s - %s] (%s) Config.lua malformed. GetModConfig doesn't return expected type.", kModName, current_vm, kLogLevels.fatal.display))
 
-    Mod.config.kModName = kModName
+    self.config.kModName = kModName
 
     -- load some defaults
 
-    if not Mod.config.kLogLevel then
-        Mod.config.kLogLevel = kLogLevels.info
-        Mod:Print(string.format("Using default value for kLogLevel (%s:%s)", Mod.config.kLogLevel.level, Mod.config.kLogLevel.display), kLogLevels.warn)
+    if not self.config.kLogLevel then
+        self.config.kLogLevel = kLogLevels.info
+        self:Print(string.format("Using default value for kLogLevel (%s:%s)", self.config.kLogLevel.level, self.config.kLogLevel.display), kLogLevels.warn)
     end
 
-    if not Mod.config.kShowInFeedbackText then
-        Mod.config.kShowInFeedbackText = false
-        Mod:Print("Using default value for kShowInFeedbackText (false)", kLogLevels.warn)
+    if not self.config.kShowInFeedbackText then
+        self.config.kShowInFeedbackText = false
+        self:Print("Using default value for kShowInFeedbackText (false)", kLogLevels.warn)
     end
 
-    if not Mod.config.modules or #Mod.config.modules == 0 then
-        Mod.config.modules = {}
-        Mod:Print("No modules specified.", kLogLevels.warn)
+    if not self.config.modules or #self.config.modules == 0 then
+        self.config.modules = {}
+        self:Print("No modules specified.", kLogLevels.warn)
     end
 
-    if not Mod.config.kModVersion then
-        Mod.config.kModVersion = "0"
-        Mod:Print("Using default value for kModVersion (0)", kLogLevels.warn)
+    if not self.config.kModVersion then
+        self.config.kModVersion = "0"
+        self:Print("Using default value for kModVersion (0)", kLogLevels.warn)
     end
 
-    if not Mod.config.kModBuild then
-        Mod.config.kModBuild = "0"
-        Mod:Print("Using default value for kModBuild (0)", kLogLevels.warn)
+    if not self.config.kModBuild then
+        self.config.kModBuild = "0"
+        self:Print("Using default value for kModBuild (0)", kLogLevels.warn)
     end
 
-    table.insert(Mod.config.modules, "Framework/Framework")
+    table.insert(self.config.modules, "Framework/Framework")
 
-    _G[Mod.config.kModName] = Mod
-    Shared.Message(string.format("[%s - %s] Framework %s loaded", kModName, current_vm, Mod:GetFrameworkVersionPrintable()))
-
+    _G[self.config.kModName] = self
+    Shared.Message(string.format("[%s - %s] Framework %s loaded", kModName, current_vm, self:GetFrameworkVersionPrintable()))
 end
 
 -- Retrieve referenced local variable
@@ -235,7 +236,7 @@ end
 -- Prints the mod version to console using the given vm
 function Mod:PrintVersion(vm)
 	local version = self:GetVersion()
-	self:Print(string.format("Version: %s loaded", version), self.kLogLevels.info, vm)
+	self:Print(string.format("%s version: %s loaded", Mod.config.kModName, version), self.kLogLevels.info, vm)
 end
 
 -- Returns a string with the mod version
@@ -679,3 +680,5 @@ end
 function Mod:GetTargetedBuyToChange()
 	return kTargetedBuyToChange
 end
+
+Mod:Initialise()
