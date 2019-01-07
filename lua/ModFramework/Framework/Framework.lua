@@ -230,13 +230,13 @@ end
 
 -- Debug print
 function Mod:PrintDebug(str, vm)
-    Mod:Print(str, self.kLogLevels.debug, vm)
+    self:Print(str, self.kLogLevels.debug, vm)
 end
 
 -- Prints the mod version to console using the given vm
 function Mod:PrintVersion(vm)
 	local version = self:GetVersion()
-	self:Print(string.format("%s version: %s loaded", Mod.config.kModName, version), self.kLogLevels.info, vm)
+	self:Print(string.format("%s version: %s loaded", self.config.kModName, version), self.kLogLevels.info, vm)
 end
 
 -- Returns a string with the mod version
