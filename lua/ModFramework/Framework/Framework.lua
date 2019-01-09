@@ -1,23 +1,143 @@
 local framework_version = "0"
-local framework_build = "6"
+local framework_build = "7"
+
+local kLogLevels = {
+    fatal = {display="Fatal", level=0},
+    error = {display="Error", level=1},
+    warn  = {display="Warn",  level=2},
+    info  = {display="Info",  level=3},
+    debug = {display="Debug", level=4},
+}
+
+local configOptions = {
+  logLevel = {
+    var             = "kLogLevel",
+    expectedType    = "table",
+    validator       =
+      function(tbl)
+        assert(tbl)
+        for k,v in pairs(kLogLevels) do
+          if v == tbl then
+            return true
+          end
+        end
+
+        return false
+      end,
+    required        = false,
+    default         = kLogLevels.info,
+    displayDefault  = "info",
+    warn            = true
+  },
+
+  showInFeedbackText = {
+    var             = "kShowInFeedbackText",
+    expectedType    = "boolean",
+    required        = false,
+    default         = false,
+    displayDefault  = "false",
+    warn            = true
+  },
+
+  modVersion = {
+    var             = "kModVersion",
+    expectedType    = "string",
+    required        = false,
+    default         = "0",
+    displayDefault  = "0",
+    warn            = true
+  },
+
+  modBuild = {
+    var             = "kModBuild",
+    expectedType    = "string",
+    required        = false,
+    default         = "1",
+    displayDefault  = "1",
+    warn            = true
+  },
+
+  modules = {
+    var             = "modules",
+    expectedType    = "table",
+    validator       =
+      function(tbl)
+        assert(tbl)
+        for k,v in pairs(tbl) do
+          if type(v) ~= "string" then
+            return false
+          end
+        end
+
+        return true
+      end,
+    required        = false,
+    default         = {},
+    displayDefault  = "new table",
+    warn            = true
+  },
+}
+
+local function ValidateConfigOption(configVar, configOption)
+
+  if type(configVar) ~= configOption.expectedType then
+    return false, string.format("Expected type \"%s\" for variable \"%s\", got \"%s\" instead", configOption.expectedType, configOption.var, type(configVar))
+  end
+
+  if configOption.validator then
+    local valid = configOption.validator(configVar)
+    if not valid then
+      return false, string.format("Validator failed for variable \"%s\"", configOption.var)
+    end
+  end
+
+  return true, "pass"
+end
+
+local function LoadDefaults(config, v)
+
+  option = v.default
+  config[v.var] = option
+
+  if v.warn then
+    Shared.Message(string.format("Using default value for option \"%s\" (%s)", v.var, v.displayDefault))
+  end
+
+end
+
+local function ValidateConfig(config)
+
+  if #config > #configOptions then
+    return false, "Too many config options set"
+  end
+
+  for _,v in pairs(configOptions) do
+
+    if config[v.var] then
+      local valid, reason = ValidateConfigOption(config[v.var], v)
+      if not valid then
+        return false, reason
+      end
+    else
+      if v.required then
+        return false, "Missing required config option \"" .. v.var .. "\""
+      end
+      LoadDefaults(config, v)
+    end
+
+  end
+
+  return true, "pass"
+
+end
+
 local Mod = {}
 
 function Mod:Initialise()
 
     local kModName = debug.getinfo(1, "S").source:gsub("@lua/", ""):gsub("/Framework/.*%.lua", "")
-
-    -- just in case :))
-    assert(kModName and type(kModName) == "string", "Initialise: Error finding mod name. Please report.")
-
     local current_vm = Client and "Client" or Server and "Server" or Predict and "Predict" or "Unknown"
-
-    local kLogLevels = {
-        fatal = {display="Fatal", level=0},
-        error = {display="Error", level=1},
-        warn  = {display="Warn",  level=2},
-        info  = {display="Info",  level=3},
-        debug = {display="Debug", level=4},
-    }
+    assert(kModName and type(kModName) == "string", "Initialise: Error finding mod name. Please report.")
 
     Shared.Message(string.format("[%s - %s] Loading framework %s", kModName, current_vm, self:GetFrameworkVersionPrintable()))
 
@@ -31,55 +151,32 @@ function Mod:Initialise()
 
     Script.Load("lua/" .. kModName .. "/Config.lua")
 
-    assert(GetModConfig, "Initialise: Config.lua malformed. Missing GetModConfig function.")
+    local config = assert(GetModConfig, "Initialise: Config.lua malformed. Missing GetModConfig function.")
+    config = config(kLogLevels)
 
-    self.config = GetModConfig(kLogLevels)
+    assert(config, "Initialise: Config.lua malformed. GetModConfig doesn't return anything.")
+    assert(type(config) == "table", "Initialise: Config.lua malformed. GetModConfig doesn't return expected type.")
 
-    assert(self.config, "Initialise: Config.lua malformed. GetModConfig doesn't return anything.")
-    assert(type(self.config) == "table", "Initialise: Config.lua malformed. GetModConfig doesn't return expected type.")
+    valid, reason = ValidateConfig(config)
+    assert(valid, "Initialise: Config failed validation. " .. reason)
 
-    self.config.kModName = kModName
-
-    -- load some defaults
-
-    if not self.config.kLogLevel then
-        self.config.kLogLevel = kLogLevels.info
-        self:Print(string.format("Using default value for kLogLevel (%s:%s)", self.config.kLogLevel.level, self.config.kLogLevel.display), kLogLevels.warn)
-    end
-
-    if not self.config.kShowInFeedbackText then
-        self.config.kShowInFeedbackText = false
-        self:Print("Using default value for kShowInFeedbackText (false)", kLogLevels.warn)
-    end
-
-    if not self.config.modules or #self.config.modules == 0 then
-        self.config.modules = {}
-        self:Print("No modules specified.", kLogLevels.warn)
-    end
-
-    if not self.config.kModVersion then
-        self.config.kModVersion = "0"
-        self:Print("Using default value for kModVersion (0)", kLogLevels.warn)
-    end
-
-    if not self.config.kModBuild then
-        self.config.kModBuild = "0"
-        self:Print("Using default value for kModBuild (0)", kLogLevels.warn)
-    end
+    config.kModName = kModName
+    self.config = config
+    config = nil
 
     table.insert(self.config.modules, "Framework/Framework")
 
     _G[self.config.kModName] = self
     Shared.Message(string.format("[%s - %s] Framework %s loaded", kModName, current_vm, self:GetFrameworkVersionPrintable()))
+
 end
 
--- Retrieve referenced local variable
---
--- Original author: https://forums.unknownworlds.com/discussion/comment/2178874#Comment_2178874
+-- Get local variable from function
 function Mod:GetLocalVariable(originalFunction, localName)
 
     local funcType = originalFunction and type(originalFunction) or "nil"
     local nameType = localName and type(localName) == "string" or "nil"
+
     assert(funcType == "function", "GetLocalVariable: Expected first argument to be of type function, was given " .. funcType)
     assert(localName and type(localName) == "string", "GetLocalVariable: Expected second argument to be of type string, was given " .. funcType)
 
