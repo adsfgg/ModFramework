@@ -1,5 +1,5 @@
 local framework_version = "0"
-local framework_build = "5"
+local framework_build = "6"
 local Mod = {}
 
 function Mod:Initialise()
@@ -7,7 +7,7 @@ function Mod:Initialise()
     local kModName = debug.getinfo(1, "S").source:gsub("@lua/", ""):gsub("/Framework/.*%.lua", "")
 
     -- just in case :))
-    assert(kModName and type(kModName) == "string")
+    assert(kModName and type(kModName) == "string", "Initialise: Error finding mod name. Please report.")
 
     local current_vm = Client and "Client" or Server and "Server" or Predict and "Predict" or "Unknown"
 
@@ -31,12 +31,12 @@ function Mod:Initialise()
 
     Script.Load("lua/" .. kModName .. "/Config.lua")
 
-    assert(GetModConfig, string.format("[%s - %s] (%s) Config.lua malformed. Missing GetModConfig function.", kModName, current_vm, kLogLevels.fatal.display))
+    assert(GetModConfig, "Initialise: Config.lua malformed. Missing GetModConfig function.")
 
     self.config = GetModConfig(kLogLevels)
 
-    assert(self.config, string.format("[%s - %s] (%s) Config.lua malformed. GetModConfig doesn't return anything.", kModName, current_vm, kLogLevels.fatal.display))
-    assert(type(self.config) == "table", string.format("[%s - %s] (%s) Config.lua malformed. GetModConfig doesn't return expected type.", kModName, current_vm, kLogLevels.fatal.display))
+    assert(self.config, "Initialise: Config.lua malformed. GetModConfig doesn't return anything.")
+    assert(type(self.config) == "table", "Initialise: Config.lua malformed. GetModConfig doesn't return expected type.")
 
     self.config.kModName = kModName
 
@@ -78,8 +78,10 @@ end
 -- Original author: https://forums.unknownworlds.com/discussion/comment/2178874#Comment_2178874
 function Mod:GetLocalVariable(originalFunction, localName)
 
-    assert(originalFunction and type(originalFunction) == "function")
-    assert(localName and type(localName) == "string")
+    local funcType = originalFunction and type(originalFunction) or "nil"
+    local nameType = localName and type(localName) == "string" or "nil"
+    assert(funcType == "function", "GetLocalVariable: Expected first argument to be of type function, was given " .. funcType)
+    assert(localName and type(localName) == "string", "GetLocalVariable: Expected second argument to be of type string, was given " .. funcType)
 
     local index = 1
     while true do
@@ -106,24 +108,17 @@ end
 -- Append new value to enum
 function Mod:AppendToEnum(tbl, key)
 
-    assert(type(tbl) == "table")
-    assert(key)
+    local tblType = tbl and type(tbl) or "nil"
+    assert(tbl and type(tbl) == "table", "AppendToEnum: First argument expected to be of type table, was " .. tblType)
+    assert(key, "AppendToEnum: required second argument \"key\" missing")
 
-    if rawget(tbl,key) then
-        self:PrintDebug("Key already exists in enum.")
-        self.PrintCallStack()
-        return
-    end
+    assert(not rawget(tbl,key), "AppendToEnum: key already exists in enum.")
 
     local maxVal = 0
     if tbl == kTechId then
         maxVal = tbl.Max
 
-        if maxVal - 1 == kTechIdMax then
-            self:PrintDebug( "Appending another value to the TechId enum would exceed network precision constraints" )
-            self.PrintCallStack()
-            return
-        end
+        assert(maxVal - 1 ~= kTechIdMax, "AppendToEnum: Appending another value to the TechId enum would exceed network precision constraints")
 
         -- delete old max
         rawset(tbl, rawget(tbl, maxVal), nil)
@@ -149,15 +144,13 @@ end
 -- Update value in enum
 function Mod:UpdateEnum(tbl, key, value)
 
-    assert(tbl and type(tbl) == "table")
-    assert(key)
-    assert(value)
+    local tblType = tbl and type(tbl) or "nil"
 
-    if rawget(tbl, key) == nil then
-        self:PrintDebug("Error updating enum: key doesn't exist in table.")
-        self.PrintCallStack()
-        return
-    end
+    assert(tblType == "table", "UpdateEnum: First argument expected to be of type table, was " .. tblType)
+    assert(key, "UpdateEnum: Required second argument \"key\" missing.")
+    assert(value, "UpdateEnum: Required third argument \"value\" missing.")
+
+    assert(rawget(tbl,key), "UpdateEnum: key doesn't exist in table.")
 
     rawset(tbl, rawget(tbl, key), value)
     rawset(tbl, key, value)
@@ -167,14 +160,12 @@ end
 -- Delete key from enum
 function Mod:RemoveFromEnum(tbl, key)
 
-    assert(tbl and type(tbl) == "table")
-    assert(key)
+    local tblType = tbl and type(tbl) or "nil"
 
-	if rawget(tbl,key) == nil then
-        self:PrintDebug("Cannot delete value from enum: key doesn't exist in table.")
-        self.PrintCallStack()
-        return
-	end
+    assert(tblType == "table", "RemoveFromEnum: First argument expected to be of type table, was " .. tblType)
+    assert(key, "RemoveFromEnum: Required second argument \"key\" missing.")
+
+    assert(rawget(tbl,key), "RemoveFromEnum: key doesn't exist in table.")
 
     rawset(tbl, rawget(tbl, key), nil)
     rawset(tbl, key, nil)
@@ -203,11 +194,13 @@ end
 -- Shared.Message wrapper
 function Mod:Print(str, level, vm)
 
-    assert(str and type(str) == "string")
+    local strType = str and type(str) or "nil"
+    assert(strType == "string", "Print: First argument expected to be of type string, was " .. strType)
 
     level = level or self.kLogLevels.info
 
-    assert(type(level) == "table")
+    local levelType = level and type(level) or "nil"
+    assert(levelType == "table", "Print: Second argument expected to be of type table, was " .. levelType)
 
     if self.config.kLogLevel.level < level.level then
         return
@@ -230,7 +223,12 @@ end
 
 -- Debug print
 function Mod:PrintDebug(str, vm)
+
+    local strType = str and type(str) or "nil"
+    assert(strType == "string", "DebugPrint: First argument expected to be of type string, was " .. strType)
+
     self:Print(str, self.kLogLevels.debug, vm)
+
 end
 
 -- Prints the mod version to console using the given vm
@@ -246,7 +244,9 @@ end
 
 -- Returns the relative ns2 path used to find lua files from the given module and vm
 function Mod:FormatDir(module, vm)
-  assert(module and type(module) == "string")
+
+  local moduleType = module and type(module) or "nil"
+  assert(moduleType == "string", "FormatDir: First argument expected to be of type string, was " .. moduleType)
 
   if vm then
       return string.format("lua/%s/%s/%s/*.lua", self.config.kModName, module, vm)
