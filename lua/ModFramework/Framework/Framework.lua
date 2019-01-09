@@ -1,5 +1,5 @@
 local framework_version = "0"
-local framework_build = "3"
+local framework_build = "4"
 local Mod = {}
 
 function Mod:Initialise()
@@ -247,9 +247,12 @@ end
 -- Returns the relative ns2 path used to find lua files from the given module and vm
 function Mod:FormatDir(module, vm)
   assert(module and type(module) == "string")
-  assert(vm and type(vm) == "string")
 
-  return string.format("lua/%s/%s/%s/*.lua", self.config.kModName, module, vm)
+  if vm then
+      return string.format("lua/%s/%s/%s/*.lua", self.config.kModName, module, vm)
+  else
+      return string.format("lua/%s/%s/*", self.config.kModName, module)
+  end
 end
 
 --[[
