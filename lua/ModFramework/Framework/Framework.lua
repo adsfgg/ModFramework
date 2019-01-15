@@ -164,6 +164,7 @@ function Mod:Initialise()
     self.config = config
     config = nil
 
+    table.insert(self.config.modules, "Framework/ConsistencyCheck")
     table.insert(self.config.modules, "Framework/Framework")
 
     _G[self.config.kModName] = self
