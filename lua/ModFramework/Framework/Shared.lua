@@ -11,8 +11,8 @@ for i = 1, #Mod.config.modules do
 
 	if Server then
 		local hashPath = Mod:FormatDir(Mod.config.modules[i])
-		Server.AddRestrictedFileHashes(hashPath)
-		Mod:PrintDebug("Hashing: " .. hashPath)
+		local result = Server.AddRestrictedFileHashes(hashPath)
+		Mod:PrintDebug("Hashing: " .. hashPath .. " Result: " .. (result and result or "nil"))
 	end
 
 	local NewTechFiles = {}
