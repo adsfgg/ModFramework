@@ -117,9 +117,6 @@ local function ValidateConfig(self, config)
   local configLength = self:TableLength(config)
   local configOptionsLength = #configOptions
 
-  print("config: " .. configLength)
-  print("configOptions: " .. configOptionsLength)
-
   -- is this really needed?
   if configLength > configOptionsLength then
     return false, "Too many config options set"
