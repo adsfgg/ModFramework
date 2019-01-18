@@ -1,5 +1,5 @@
 local framework_version = "0"
-local framework_build = "10"
+local framework_build = "11"
 
 local kLogLevels = {
     fatal = {display="Fatal", level=0},
@@ -134,6 +134,11 @@ local function ValidateConfig(config)
 
   return true, "pass"
 
+end
+
+function GetMod()
+  local kModName = debug.getinfo(1, "S").source:gsub("@lua/", ""):gsub("/Framework/.*%.lua", "")
+  return _G[kModName]
 end
 
 local Mod = {}

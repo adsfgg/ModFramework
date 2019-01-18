@@ -1,5 +1,4 @@
-local kModName = debug.getinfo(1, "S").source:gsub("@lua/", ""):gsub("/Framework/.*%.lua", "")
-local Mod = _G[kModName]
+local Mod = GetMod()
 
 local upgradeToRemove = Mod:GetUpgradesToRemove()
 local upgradeToChange = Mod:GetUpgradesToChange()
