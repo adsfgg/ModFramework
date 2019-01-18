@@ -176,7 +176,7 @@ function Mod:Initialise()
 
     for _,v in ipairs(frameworkModules) do
       assert(type(v) == "string", "Initialise: Invalid framework module")
-      table.insert(self.config.modules, "Core/" .. v)
+      table.insert(self.config.modules, "Framework/" .. v)
     end
 
     _G[self.config.kModName] = self
