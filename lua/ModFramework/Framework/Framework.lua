@@ -1,6 +1,11 @@
 local framework_version = "0"
 local framework_build = "11"
 
+local frameworkModules = {
+  "ConsistencyCheck",
+  "TechChanges", -- make sure this is always last
+}
+
 local kLogLevels = {
     fatal = {display="Fatal", level=0},
     error = {display="Error", level=1},
@@ -9,13 +14,8 @@ local kLogLevels = {
     debug = {display="Debug", level=4},
 }
 
-local frameworkModules = {
-  "ConsistencyCheck",
-  "TechChanges", -- make sure this is always last
-}
-
 local configOptions = {
-  logLevel = {
+  {
     var             = "kLogLevel",
     expectedType    = "table",
     validator       =
@@ -35,7 +35,7 @@ local configOptions = {
     warn            = true
   },
 
-  showInFeedbackText = {
+  {
     var             = "kShowInFeedbackText",
     expectedType    = "boolean",
     required        = false,
@@ -44,7 +44,7 @@ local configOptions = {
     warn            = true
   },
 
-  modVersion = {
+  {
     var             = "kModVersion",
     expectedType    = "string",
     required        = false,
@@ -53,7 +53,7 @@ local configOptions = {
     warn            = true
   },
 
-  modBuild = {
+  {
     var             = "kModBuild",
     expectedType    = "string",
     required        = false,
@@ -62,13 +62,13 @@ local configOptions = {
     warn            = true
   },
 
-  modules = {
+  {
     var             = "modules",
     expectedType    = "table",
     validator       =
       function(tbl)
         assert(tbl)
-        for k,v in pairs(tbl) do
+        for k,v in ipairs(tbl) do
           if type(v) ~= "string" then
             return false
           end
@@ -82,6 +82,8 @@ local configOptions = {
     warn            = true
   },
 }
+
+local Mod = {}
 
 local function ValidateConfigOption(configVar, configOption)
 
@@ -110,15 +112,22 @@ local function LoadDefaults(config, v)
 
 end
 
-local function ValidateConfig(config)
+local function ValidateConfig(self, config)
 
-  if #config > #configOptions then
+  local configLength = self:TableLength(config)
+  local configOptionsLength = #configOptions
+
+  print("config: " .. configLength)
+  print("configOptions: " .. configOptionsLength)
+
+  -- is this really needed?
+  if configLength > configOptionsLength then
     return false, "Too many config options set"
   end
 
-  for _,v in pairs(configOptions) do
+  for _,v in ipairs(configOptions) do
 
-    if config[v.var] then
+    if config[v.var] ~= nil then
       local valid, reason = ValidateConfigOption(config[v.var], v)
       if not valid then
         return false, reason
@@ -132,22 +141,29 @@ local function ValidateConfig(config)
 
   end
 
-  return true, "pass"
+  return true, "passed"
 
+end
+
+local function FindModName()
+  local modName = debug.getinfo(1, "S").source:gsub("@lua/", ""):gsub("/Framework/.*%.lua", "")
+  assert(modName and type(modName) == "string", "Error finding mod name. Please report.")
+  return modName
+end
+
+local function GetLogLevels()
+  return kLogLevels
 end
 
 function GetMod()
-  local kModName = debug.getinfo(1, "S").source:gsub("@lua/", ""):gsub("/Framework/.*%.lua", "")
+  local kModName = FindModName()
   return _G[kModName]
 end
 
-local Mod = {}
-
 function Mod:Initialise()
 
-    local kModName = debug.getinfo(1, "S").source:gsub("@lua/", ""):gsub("/Framework/.*%.lua", "")
+    local kModName = FindModName()
     local current_vm = Client and "Client" or Server and "Server" or Predict and "Predict" or "Unknown"
-    assert(kModName and type(kModName) == "string", "Initialise: Error finding mod name. Please report.")
 
     Shared.Message(string.format("[%s - %s] Loading framework %s", kModName, current_vm, self:GetFrameworkVersionPrintable()))
 
@@ -157,17 +173,17 @@ function Mod:Initialise()
         return
     end
 
-    self.kLogLevels = kLogLevels
+    self.kLogLevels = GetLogLevels()
 
     Script.Load("lua/" .. kModName .. "/Config.lua")
 
     local config = assert(GetModConfig, "Initialise: Config.lua malformed. Missing GetModConfig function.")
-    config = config(kLogLevels)
+    config = config(self.kLogLevels)
 
     assert(config, "Initialise: Config.lua malformed. GetModConfig doesn't return anything.")
     assert(type(config) == "table", "Initialise: Config.lua malformed. GetModConfig doesn't return expected type.")
 
-    valid, reason = ValidateConfig(config)
+    valid, reason = ValidateConfig(self, config)
     assert(valid, "Initialise: Config failed validation. " .. reason)
 
     config.kModName = kModName
@@ -307,18 +323,23 @@ function Mod:Print(str, level, vm)
     local strType = str and type(str) or "nil"
     assert(strType == "string", "Print: First argument expected to be of type string, was " .. strType)
 
-    level = level or self.kLogLevels.info
+    local kLogLevels = self:GetLogLevels()
+    local config = self:GetConfig()
+    local logLevel = self:GetConfigLogLevel()
+    local kModName = self:GetModName()
+
+    level = level or kLogLevels.info
 
     local levelType = level and type(level) or "nil"
     assert(levelType == "table", "Print: Second argument expected to be of type table, was " .. levelType)
 
-    if self.config.kLogLevel.level < level.level then
+    if logLevel.level < level.level then
         return
     end
 
     local current_vm = Client and "Client" or Server and "Server" or Predict and "Predict" or "Unknown"
 
-    local msg = string.format("[%s - %s] (%s) %s", self.config.kModName, current_vm, level.display, str)
+    local msg = string.format("[%s - %s] (%s) %s", kModName, current_vm, level.display, str)
 
 	if not vm
         or vm == "Server" and Server
@@ -792,6 +813,37 @@ end
 
 function Mod:GetTargetedBuyToChange()
 	return kTargetedBuyToChange
+end
+
+function Mod:GetLogLevels()
+  return self.kLogLevels
+end
+
+function Mod:GetConfig()
+  return self.config
+end
+
+function Mod:GetConfigLogLevel()
+  return self.config.kLogLevel
+end
+
+function Mod:GetModName()
+  return self.config.kModName
+end
+
+--[[
+===========================
+        Helper Funcs
+===========================
+]]
+
+-- i wish the # operator was deterministic
+function Mod:TableLength(tbl)
+  local count = 0
+  for k,v in pairs(tbl) do
+    count = count + 1
+  end
+  return count
 end
 
 Mod:Initialise()
