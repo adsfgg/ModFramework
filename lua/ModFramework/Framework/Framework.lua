@@ -1,5 +1,5 @@
 local framework_version = "0"
-local framework_build = "9"
+local framework_build = "10"
 
 local kLogLevels = {
     fatal = {display="Fatal", level=0},
@@ -7,6 +7,11 @@ local kLogLevels = {
     warn  = {display="Warn",  level=2},
     info  = {display="Info",  level=3},
     debug = {display="Debug", level=4},
+}
+
+local frameworkModules = {
+  "ConsistencyCheck",
+  "TechChanges", -- make sure this is always last
 }
 
 local configOptions = {
@@ -164,8 +169,10 @@ function Mod:Initialise()
     self.config = config
     config = nil
 
-    table.insert(self.config.modules, "Framework/ConsistencyCheck")
-    table.insert(self.config.modules, "Framework/Framework")
+    for _,v in ipairs(frameworkModules) do
+      assert(type(v) == "string", "Initialise: Invalid framework module")
+      table.insert(self.config.modules, "Core/" .. v)
+    end
 
     _G[self.config.kModName] = self
     Shared.Message(string.format("[%s - %s] Framework %s loaded", kModName, current_vm, self:GetFrameworkVersionPrintable()))
