@@ -10,7 +10,7 @@ for i = 1, #Mod.config.modules do
 
 	for i = 1, #PredictFiles do
 		Mod:PrintDebug("Loading predict file: " .. PredictFiles[i], "Predict")
-    	Script.Load(PredictFiles[i])
+		Script.Load(PredictFiles[i])
 	end
 end
 

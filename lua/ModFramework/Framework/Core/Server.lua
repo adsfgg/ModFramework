@@ -10,7 +10,7 @@ for i = 1, #Mod.config.modules do
 
 	for i = 1, #ServerFiles do
 		Mod:PrintDebug("Loading server file: " .. ServerFiles[i], "Server")
-	  	Script.Load(ServerFiles[i])
+		Script.Load(ServerFiles[i])
 	end
 end
 

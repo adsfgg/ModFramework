@@ -9,15 +9,15 @@ function PlayingTeam:InitTechTree()
 	local activationToAdd = Mod:GetActivationToAdd()
 	local buyToAdd = Mod:GetBuyNodesToAdd()
 
-    for _, value in ipairs(researchToAdd) do
+	for _, value in ipairs(researchToAdd) do
 		Mod:PrintDebug("Adding research node: " .. (EnumToString(kTechId, value[1]) or value[1]) .. ", Team: " .. self:GetTeamNumber(), "all")
-        self.techTree:AddResearchNode(value[1], value[2], value[3], value[4])
-    end
+		self.techTree:AddResearchNode(value[1], value[2], value[3], value[4])
+	end
 
-    for _, value in ipairs(activationToAdd) do
+	for _, value in ipairs(activationToAdd) do
 		Mod:PrintDebug("Adding activation node: " .. (EnumToString(kTechId, value[1]) or value[1]) .. ", Team: " .. self:GetTeamNumber(), "all")
-        self.techTree:AddActivation(value[1], value[2], value[3])
-    end
+		self.techTree:AddActivation(value[1], value[2], value[3])
+	end
 
 	for _, value in ipairs(buyToAdd) do
 		Mod:PrintDebug("Adding buy node: " .. (EnumToString(kTechId, value[1]) or value[1]) .. ", Team: " .. self:GetTeamNumber(), "all")

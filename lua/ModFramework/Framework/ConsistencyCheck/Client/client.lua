@@ -4,7 +4,7 @@ local sent = false
 local function CheckClientEntry()
 	if sent then return end
 
-  local clientEntry = {}
+	local clientEntry = {}
 
 	Shared.GetMatchingFileNames("lua/entry/*", true, clientEntry)
 

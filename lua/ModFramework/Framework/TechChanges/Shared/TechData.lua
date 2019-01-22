@@ -1,40 +1,37 @@
 local Mod = GetMod()
 
 local function TechDataChanges(techData)
+  local techToRemove = Mod:GetTechToRemove()
+  local techToChange = Mod:GetTechToChange()
 
-    local techToRemove = Mod:GetTechToRemove()
-    local techToChange = Mod:GetTechToChange()
+  for techIndex = #techData, 1, -1 do
+    local record = techData[techIndex]
+    local techDataId = record[kTechDataId]
 
-    for techIndex = #techData, 1, -1 do
-        local record = techData[techIndex]
-        local techDataId = record[kTechDataId]
+    if techToRemove[techDataId] then
+      Mod:PrintDebug("Removing tech: " .. record[kTechDataDisplayName], "all")
+      table.remove(techData, techIndex)
+    elseif techToChange[techDataId] then
+      Mod:PrintDebug("Changing tech: " .. record[kTechDataDisplayName], "all")
 
-        if techToRemove[techDataId] then
-            Mod:PrintDebug("Removing tech: " .. record[kTechDataDisplayName], "all")
-
-            table.remove(techData, techIndex)
-        elseif techToChange[techDataId] then
-            Mod:PrintDebug("Changing tech: " .. record[kTechDataDisplayName], "all")
-
-            for index, value in ipairs(techToChange[techDataId]) do
-                techData[techIndex][index] = value
-            end
-        end
+      for index, value in ipairs(techToChange[techDataId]) do
+        techData[techIndex][index] = value
+      end
     end
-
+  end
 end
 
 local oldBuildTechData = BuildTechData
 function BuildTechData()
-    local techData = oldBuildTechData()
+  local techData = oldBuildTechData()
 
-    TechDataChanges(techData)
+  TechDataChanges(techData)
 
-    local techToAdd = Mod:GetTechToAdd()
-    for _,v in ipairs(techToAdd) do
-        Mod:PrintDebug("Adding tech: " .. v[kTechDataDisplayName])
-        table.insert(techData, v)
-    end
+  local techToAdd = Mod:GetTechToAdd()
+  for _,v in ipairs(techToAdd) do
+    Mod:PrintDebug("Adding tech: " .. v[kTechDataDisplayName])
+    table.insert(techData, v)
+  end
 
-    return techData
+  return techData
 end
