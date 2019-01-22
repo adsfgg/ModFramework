@@ -5,9 +5,9 @@ local clientEntryCount = 0
 local function CompareEntries(client)
   assert(Server)
   assert(serverEntryCount > 0)
-	assert(clientEntryCount > 0)
-
-	if serverEntryCount ~= clientEntryCount then
+	if clientEntryCount <= 0 then
+    Server.DisconnectClient(client, "Malformed entry count")
+	elseif serverEntryCount ~= clientEntryCount then
     Server.DisconnectClient(client, "Entry file count mismatch")
 	end
 end

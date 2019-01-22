@@ -13,4 +13,5 @@ local function CheckClientEntry()
 	sent = true
 end
 
+-- using clientconnected makes the engine implode, so lets check every tick :D
 Event.Hook("UpdateClient", CheckClientEntry)
