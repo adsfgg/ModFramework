@@ -1,5 +1,5 @@
 local framework_version = "0"
-local framework_build = "15"
+local framework_build = "16"
 
 local frameworkModules = {
   "ConsistencyCheck",
