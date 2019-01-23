@@ -1,5 +1,5 @@
 local framework_version = "0"
-local framework_build = "14"
+local framework_build = "15"
 
 local frameworkModules = {
   "ConsistencyCheck",
@@ -188,33 +188,162 @@ function Mod:Initialise()
   Shared.Message(string.format("[%s - %s] Framework %s loaded", kModName, current_vm, self:GetFrameworkVersionPrintable()))
 end
 
--- Get local variable from function
-function Mod:GetLocalVariable(originalFunction, localName)
-  local funcType = originalFunction and type(originalFunction) or "nil"
-  local nameType = localName and type(localName) or "nil"
+local kModMaxRecursionDepth = 5
 
-  assert(funcType == "function", "GetLocalVariable: Expected first argument to be of type function, was given " .. funcType)
-  assert(nameType == "string", "GetLocalVariable: Expected second argument to be of type string, was given " .. nameType)
-
+local function RecurseGetLocalVariable(self, originalFunction, localName, recurse, depth)
+  if not depth then
+    depth = 1
+  else
+    depth = depth + 1
+  end
   local index = 1
+
   while true do
-    local n, v = debug.getupvalue(originalFunction, index)
 
-    if not n then
-      break
-    end
+      local n, v = debug.getupvalue(originalFunction, index)
+      if not n then
+         break
+      end
 
-    if n == localName then
-      return v
-    end
+      if n == localName then
+          return v
+      end
 
-    index = index + 1
+      index = index + 1
 
   end
 
-  self:PrintDebug("Local variable \"" .. localName .. "\" not found")
+  if not recurse then return nil end
+
+  -- recurse into local functions within the target function
+  index = 1
+  while true do
+    local n,v = debug.getupvalue(originalFunction, index)
+
+    if not n then break end
+
+    local func
+
+    if type(n) == "function" then
+      func = n
+    elseif type(v) == "function" then
+      func = v
+    end
+
+    if func then
+      -- make sure we don't recurse too far
+      if depth + 1 > kModMaxRecursionDepth then
+        self:Print("GetLocalVariable: Recursion depth exceeded.", self.kLogLevels.warn)
+        return nil
+      end
+
+      local var = RecurseGetLocalVariable(self, func, localName, recurse, depth)
+      if var ~= nil then
+        return var
+      end
+    end
+
+    index = index + 1
+  end
 
   return nil
+end
+
+-- Get local variable from function
+function Mod:GetLocalVariable(originalFunction, localName, recurse)
+    local funcType = originalFunction and type(originalFunction) or "nil"
+    local nameType = localName and type(localName) or "nil"
+    local recurseType = recurse ~= nil and type(recurse) or "nil"
+
+    assert(funcType == "function", "GetLocalVariable: Expected first argument to be of type function, was given " .. funcType)
+    assert(nameType == "string", "GetLocalVariable: Expected second argument to be of type string, was given " .. nameType)
+    assert(recurseType == "boolean" or recurseType == "nil", "GetLocalVariable: Expected optional fourth argument to be of type boolean, was given " .. recurseType)
+
+    if recurse == nil then recurse = false end
+
+    local var = RecurseGetLocalVariable(self, originalFunction, localName, recurse)
+    if var == nil then
+      self:Print("GetLocalVariable: Local variable \"" .. localName .. "\" not found", self.kLogLevels.warn)
+    end
+    return var
+end
+
+local function RecurseReplaceLocal(self, func, upName, newUp, recurse, depth)
+  if not depth then
+    depth = 1
+  else
+    depth = depth + 1
+  end
+
+  local index = 1
+  -- check if this func has the up value first
+  while true do
+    local n,v = debug.getupvalue(func, index)
+
+    if not n and not v then break end
+
+    if n == upName then
+      debug.setupvalue(func, index, newUp)
+      return true
+    end
+
+    index = index + 1
+  end
+
+  if not recurse then return false end
+
+  -- recurse into local functions within the target function
+  index = 1
+  while true do
+    local n,v = debug.getupvalue(func, index)
+
+    if not n then break end
+
+    local func
+
+    if type(n) == "function" then
+      func = n
+    elseif type(v) == "function" then
+      func = v
+    end
+
+    if func then
+      -- make sure we don't recurse too far
+      if depth + 1 > kModMaxRecursionDepth then
+        self:Print("ReplaceLocal: Recursion depth exceeded.", self.kLogLevels.warn)
+        return false
+      end
+
+      local success = RecurseReplaceLocal(self, func, upName, newUp, recurse, depth)
+      if success then
+        return true
+      end
+    end
+
+    index = index + 1
+  end
+
+  return false
+end
+
+function Mod:ReplaceLocal(func, upName, newUp, recurse)
+  local funcType = func and type(func) or "nil"
+  local upNameType = upName and type(upName) or "nil"
+  local upFuncType = upFunc and type(upFunc) or "nil"
+  local recurseType = recurse ~= nil and type(recurse) or "nil"
+
+  assert(funcType == "function", "ReplaceLocal: Expected first argument to be of type function, was given " .. funcType)
+  assert(upNameType == "string", "ReplaceLocal: Expected second argument to be of type string, was given " .. upNameType)
+  assert(newUp ~= nil, "ReplaceLocal: Missing required third argument newUp.")
+  assert(recurseType == "boolean" or recurseType == "nil", "ReplaceLocal: Expected optional fourth argument to be of type boolean, was given " .. recurseType)
+
+  if recurse == nil then recurse = false end
+
+  local success = RecurseReplaceLocal(self, func, upName, newUp, recurse)
+  if not success then
+    self:Print("ReplaceLocal: Local variable \"" .. upName .. "\" not found.", self.kLogLevels.warn)
+  end
+  return success
 end
 
 -- Append new value to enum
@@ -530,6 +659,7 @@ end
 -- build nodes
 local kBuildToRemove = {}
 local kBuildToChange = {}
+local kBuildToAdd = {}
 
 function Mod:RemoveBuildNode(techId)
   table.insert(kBuildToRemove, techId, true)
@@ -537,6 +667,10 @@ end
 
 function Mod:ChangeBuildNode(techId, prereq1, prereq2, isRequired)
   table.insert(kBuildToChange, techId, { techId, prereq1, prereq2, isRequired } )
+end
+
+function Mod:AddBuildNode(techId, prereq1, prereq2, isRequired)
+  table.insert(kBuildToAdd, techId, prereq1, prereq2, isRequired)
 end
 
 -- passive
@@ -735,6 +869,10 @@ end
 
 function Mod:GetBuildNodesToChange()
   return kBuildToChange
+end
+
+function Mod:GetBuildNodesToAdd()
+  return kBuildToAdd
 end
 
 function Mod:GetPassiveToRemove()
