@@ -5,7 +5,8 @@ function GetModConfig(kLogLevels)
 	config.kShowInFeedbackText = false
 	config.kModVersion = "0"
 	config.kModBuild = "1"
-
+	config.disableRanking = false
+	
 	config.modules =
 	{
 	}

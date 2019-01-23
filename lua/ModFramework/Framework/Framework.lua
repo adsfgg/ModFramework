@@ -1,5 +1,5 @@
 local framework_version = "0"
-local framework_build = "16"
+local framework_build = "17"
 
 local frameworkModules = {
   "ConsistencyCheck",
@@ -59,6 +59,15 @@ local configOptions = {
     required        = false,
     default         = "1",
     displayDefault  = "1",
+    warn            = true
+  },
+
+  {
+    var             = "disableRanking",
+    expectedType    = "boolean",
+    required        = false,
+    default         = false,
+    displayDefault  = "false",
     warn            = true
   },
 
@@ -179,6 +188,10 @@ function Mod:Initialise()
   config.kModName = kModName
   self.config = config
   config = nil
+
+  if self.config.disableRanking == true and Server then
+    gRankingDisabled = true
+  end
 
   for _,v in ipairs(frameworkModules) do
     assert(type(v) == "string", "Initialise: Invalid framework module")
