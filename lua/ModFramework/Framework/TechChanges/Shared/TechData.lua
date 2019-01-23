@@ -14,7 +14,7 @@ local function TechDataChanges(techData)
     elseif techToChange[techDataId] then
       Mod:PrintDebug("Changing tech: " .. record[kTechDataDisplayName], "all")
 
-      for index, value in ipairs(techToChange[techDataId]) do
+      for index, value in pairs(techToChange[techDataId]) do
         techData[techIndex][index] = value
       end
     end

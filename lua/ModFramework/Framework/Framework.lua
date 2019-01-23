@@ -3,7 +3,8 @@ local framework_build = "15"
 
 local frameworkModules = {
   "ConsistencyCheck",
-  "TechChanges", -- make sure this is always last
+  "Bindings",
+  "TechChanges",
 }
 
 local kLogLevels = {
@@ -473,16 +474,39 @@ function Mod:GetVersion()
   return string.format("v%s.%s", self.config.kModVersion, self.config.kModBuild);
 end
 
--- Returns the relative ns2 path used to find lua files from the given module and vm
-function Mod:FormatDir(module, vm)
+-- Returns the relative ns2 path used to find lua files
+function Mod:FormatDir(module, name, file)
   local moduleType = module and type(module) or "nil"
   assert(moduleType == "string", "FormatDir: First argument expected to be of type string, was " .. moduleType)
 
-  if vm then
-    return string.format("lua/%s/%s/%s/*.lua", self.config.kModName, module, vm)
+  if name then
+    if file then
+      return string.format("lua/%s/%s/%s.lua", self.config.kModName, module, name)
+    else
+      return string.format("lua/%s/%s/%s/*.lua", self.config.kModName, module, name)
+    end
   else
     return string.format("lua/%s/%s/*.lua", self.config.kModName, module)
   end
+end
+
+--[[
+=====================
+  Binding Functions
+=====================
+]]
+
+local bindingAdditions = {}
+
+function Mod:AddNewBind(name, type, transKey, default, afterName, defaultInputKey, move)
+  assert(name)
+  assert(type)
+  assert(transKey)
+  assert(default)
+  assert(afterName)
+  assert(defaultInputKey)
+  assert(move)
+  table.insert(bindingAdditions, { name, type, transKey, default, afterName, defaultInputKey, move })
 end
 
 --[[
@@ -670,7 +694,7 @@ function Mod:ChangeBuildNode(techId, prereq1, prereq2, isRequired)
 end
 
 function Mod:AddBuildNode(techId, prereq1, prereq2, isRequired)
-  table.insert(kBuildToAdd, techId, prereq1, prereq2, isRequired)
+  table.insert(kBuildToAdd, { techId, prereq1, prereq2, isRequired })
 end
 
 -- passive
@@ -746,6 +770,10 @@ function Mod:ChangeTargetedBuy(techId, prereq1, prereq2, addOnTechId)
 end
 
 -- getters BOOOOO
+
+function Mod:GetBindingAdditions()
+  return bindingAdditions
+end
 
 function Mod:GetFrameworkVersion()
   return framework_version
