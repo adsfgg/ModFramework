@@ -1118,7 +1118,7 @@ end
 local guiTexturesToReplace = {}
 
 function Mod:ReplaceGUITexture(old, new)
-  assert(not guiTexturesToReplace[old], string.format("ReplaceGUITexture: The texture %q is already being replaced with %q.", old, new))
+  assert(not guiTexturesToReplace[old], string.format("ReplaceGUITexture: The texture %q is already being replaced with %q.", old, guiTexturesToReplace[old]))
   guiTexturesToReplace[old] = new
 end
 
