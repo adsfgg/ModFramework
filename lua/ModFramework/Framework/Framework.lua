@@ -233,7 +233,6 @@ function Mod:Initialise()
 
   	  if #Files == 0 then
   		  Mod:Print("No files found for module: " .. v, Mod:GetLogLevels().warn)
-  		  break
       end
     end
   end
