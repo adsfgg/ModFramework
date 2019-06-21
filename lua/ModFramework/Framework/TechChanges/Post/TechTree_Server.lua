@@ -6,10 +6,10 @@ local upgradeToChange = Mod:GetUpgradesToChange()
 local oldAddUpgradeNode = TechTree.AddUpgradeNode
   function TechTree:AddUpgradeNode(techId, prereq1, prereq2)
   if upgradeToRemove[techId] then
-    Mod:PrintDebug("Removing upgrade: " .. (EnumToString(kTechId, techId) or techId), "all")
+    Mod.Logger:PrintDebug("Removing upgrade: " .. (EnumToString(kTechId, techId) or techId), "all")
     return
   elseif upgradeToChange[techId] then
-    Mod:PrintDebug("Changing upgrade: " .. (EnumToString(kTechId, techId) or techId), "all")
+    Mod.Logger:PrintDebug("Changing upgrade: " .. (EnumToString(kTechId, techId) or techId), "all")
     local newNode = upgradeToChange[techId]
 
     oldAddUpgradeNode(self, newNode[1], newNode[2], newNode[3])
@@ -24,9 +24,9 @@ local researchToChange = Mod:GetResearchToChange()
 local oldAddResearchNode = TechTree.AddResearchNode
 function TechTree:AddResearchNode(techId, prereq1, prereq2, addOnTechId)
   if researchToRemove[techId] then
-    Mod:PrintDebug("Removing research node: " .. (EnumToString(kTechId, techId) or techId), "all")
+    Mod.Logger:PrintDebug("Removing research node: " .. (EnumToString(kTechId, techId) or techId), "all")
   elseif researchToChange[techId] then
-    Mod:PrintDebug("Changing research node: " .. (EnumToString(kTechId, techId) or techId), "all")
+    Mod.Logger:PrintDebug("Changing research node: " .. (EnumToString(kTechId, techId) or techId), "all")
     local changedNode = researchToChange[techId]
 
     oldAddResearchNode(self, changedNode[1], changedNode[2], changedNode[3], changedNode[4])
@@ -41,10 +41,10 @@ local targetedActivationToChange = Mod:GetTargetedActivationToChange()
 local oldAddTargetedActivation = TechTree.AddTargetedActivation
 function TechTree:AddTargetedActivation(techId, prereq1, prereq2)
   if targetedActivationToRemove[techId] then
-    Mod:PrintDebug("Removing targeted activation: " .. (EnumToString(kTechId, techId) or techId), "all")
+    Mod.Logger:PrintDebug("Removing targeted activation: " .. (EnumToString(kTechId, techId) or techId), "all")
     return
   elseif targetedActivationToChange[techId] then
-    Mod:PrintDebug("Changing targeted activation: " .. (EnumToString(kTechId, techId) or techId), "all")
+    Mod.Logger:PrintDebug("Changing targeted activation: " .. (EnumToString(kTechId, techId) or techId), "all")
     local changedNode = targetedActivationToChange[techId]
 
     oldAddTargetedActivation(self, changedNode[1], changedNode[2], changedNode[3])
@@ -59,10 +59,10 @@ local buyToChange = Mod:GetBuyNodesToChange()
 local oldAddBuyNode = TechTree.AddBuyNode
 function TechTree:AddBuyNode(techId, prereq1, prereq2, addOnTechId)
   if buyToRemove[techId] then
-    Mod:PrintDebug("Removing buy node: " .. (EnumToString(kTechId, techId) or techId), "all")
+    Mod.Logger:PrintDebug("Removing buy node: " .. (EnumToString(kTechId, techId) or techId), "all")
     return
   elseif buyToChange[techId] then
-    Mod:PrintDebug("Changing buy node: " .. (EnumToString(kTechId, techId) or techId), "all")
+    Mod.Logger:PrintDebug("Changing buy node: " .. (EnumToString(kTechId, techId) or techId), "all")
     local changedNode = buyToChange[techId]
 
     oldAddBuyNode(self, changedNode[1], changedNode[2], changedNode[3], changedNode[4])
@@ -77,10 +77,10 @@ local buildToChange = Mod:GetBuildNodesToChange()
 local oldAddBuildNode = TechTree.AddBuildNode
 function TechTree:AddBuildNode(techId, prereq1, prereq2, isRequired)
   if buildToRemove[techId] then
-    Mod:PrintDebug("Removing build node: " .. (EnumToString(kTechId, techId) or techId), "all")
+    Mod.Logger:PrintDebug("Removing build node: " .. (EnumToString(kTechId, techId) or techId), "all")
     return
   elseif buildToChange[techId] then
-    Mod:PrintDebug("Changing build node: " .. (EnumToString(kTechId, techId) or techId), "all")
+    Mod.Logger:PrintDebug("Changing build node: " .. (EnumToString(kTechId, techId) or techId), "all")
     local changedNode = buildToChange[techId]
 
     oldAddBuildNode(self, changedNode[1], changedNode[2], changedNode[3], changedNode[4])
@@ -95,10 +95,10 @@ local passiveToChange = Mod:GetPassiveToChange()
 local oldAddPassive = TechTree.AddPassive
 function TechTree:AddPassive(techId, prereq1, prereq2)
   if passiveToRemove[techId] then
-    Mod:PrintDebug("Removing passive: " .. (EnumToString(kTechId, techId) or techId), "all")
+    Mod.Logger:PrintDebug("Removing passive: " .. (EnumToString(kTechId, techId) or techId), "all")
     return
   elseif passiveToChange[techId] then
-    Mod:PrintDebug("Changing passive: " .. (EnumToString(kTechId, techId) or techId), "all")
+    Mod.Logger:PrintDebug("Changing passive: " .. (EnumToString(kTechId, techId) or techId), "all")
     local changedNode = passiveToChange[techId]
 
     oldAddPassive(self, changedNode[1], changedNode[2], changedNode[3])
@@ -113,10 +113,10 @@ local specialToChange = Mod:GetSpecialToChange()
 local oldAddSpecial = TechTree.AddSpecial
 function TechTree:AddSpecial(techId, prereq1, prereq2, requiresTarget)
   if specialToRemove[techId] then
-    Mod:PrintDebug("Removing special: " .. (EnumToString(kTechId, techId) or techId), "all")
+    Mod.Logger:PrintDebug("Removing special: " .. (EnumToString(kTechId, techId) or techId), "all")
     return
   elseif specialToChange[techId] then
-    Mod:PrintDebug("Changing special: " .. (EnumToString(kTechId, techId) or techId), "all")
+    Mod.Logger:PrintDebug("Changing special: " .. (EnumToString(kTechId, techId) or techId), "all")
     local changedNode = specialToChange[techId]
 
     oldAddSpecial(self, changedNode[1], changedNode[2], changedNode[3], changedNode[4])
@@ -131,10 +131,10 @@ local manufactureNodesToChange = Mod:GetManufactureNodesToChange()
 local oldAddManufactureNode = TechTree.AddManufactureNode
 function TechTree:AddManufactureNode(techId, prereq1, prereq2, isRequired)
   if manufactureNodesToRemove[techId] then
-    Mod:PrintDebug("Removing manufacture node: " .. (EnumToString(kTechId, techId) or techId), "all")
+    Mod.Logger:PrintDebug("Removing manufacture node: " .. (EnumToString(kTechId, techId) or techId), "all")
     return
   elseif manufactureNodesToChange[techId] then
-    Mod:PrintDebug("Changing manufacture node: " .. (EnumToString(kTechId, techId) or techId), "all")
+    Mod.Logger:PrintDebug("Changing manufacture node: " .. (EnumToString(kTechId, techId) or techId), "all")
     local changedNode = manufactureNodesToChange[techId]
 
     oldAddManufactureNode(self, changedNode[1], changedNode[2], changedNode[3], changedNode[4])
@@ -148,7 +148,7 @@ local ordersToRemove = Mod:GetOrdersToRemove()
 local oldAddOrder = TechTree.AddOrder
 function TechTree:AddOrder(techId)
   if ordersToRemove[techId] then
-    Mod:PrintDebug("Removing order: " .. (EnumToString(kTechId, techId) or techId), "all")
+    Mod.Logger:PrintDebug("Removing order: " .. (EnumToString(kTechId, techId) or techId), "all")
     return
   else
     oldAddOrder(self, techId)
@@ -161,10 +161,10 @@ local activationToChange = Mod:GetActivationToChange()
 local oldAddActivation = TechTree.AddActivation
 function TechTree:AddActivation(techId, prereq1, prereq2)
   if activationToRemove[techId] then
-    Mod:PrintDebug("Removing activation: " .. (EnumToString(kTechId, techId) or techId), "all")
+    Mod.Logger:PrintDebug("Removing activation: " .. (EnumToString(kTechId, techId) or techId), "all")
     return
   elseif activationToChange[techId] then
-    Mod:PrintDebug("Changing activation: " .. (EnumToString(kTechId, techId) or techId), "all")
+    Mod.Logger:PrintDebug("Changing activation: " .. (EnumToString(kTechId, techId) or techId), "all")
     local changedNode = activationToChange[techId]
 
     oldAddActivation(self, changedNode[1], changedNode[2], changedNode[3])
@@ -179,10 +179,10 @@ local targetedBuyToChange = Mod:GetTargetedBuyToChange()
 local oldAddTargetedBuyNode = TechTree.AddTargetedBuyNode
 function TechTree:AddTargetedBuyNode(techId, prereq1, prereq2, addOnTechId)
   if targetedBuyToRemove[techId] then
-    Mod:PrintDebug("Removing targeted buy node: " .. (EnumToString(kTechId, techId) or techId), "all")
+    Mod.Logger:PrintDebug("Removing targeted buy node: " .. (EnumToString(kTechId, techId) or techId), "all")
     return
   elseif targetedBuyToChange[techId] then
-    Mod:PrintDebug("Changing targeted buy node: " .. (EnumToString(kTechId, techId) or techId), "all")
+    Mod.Logger:PrintDebug("Changing targeted buy node: " .. (EnumToString(kTechId, techId) or techId), "all")
     local changedNode = targetedBuyToChange[techId]
 
     oldAddTargetedBuyNode(self, changedNode[1], changedNode[2], changedNode[3], changedNode[4])

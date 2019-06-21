@@ -7,31 +7,24 @@ local frameworkModules = {
   "TechChanges",
 }
 
-local kLogLevels = {
-  fatal = {display="Fatal", level=0},
-  error = {display="Error", level=1},
-  warn  = {display="Warn",  level=2},
-  info  = {display="Info",  level=3},
-  debug = {display="Debug", level=4},
-}
-
 local configOptions = {
   {
     var             = "kLogLevel",
     expectedType    = "table",
     required        = false,
-    default         = kLogLevels.info,
+    default         = {display="Info",  level=3},
     displayDefault  = "info",
     warn            = true,
     validator       =
       function(tbl)
         assert(tbl)
-        for k,v in pairs(kLogLevels) do
-          if v == tbl then
-            return true
-          end
-        end
-        return false
+        return true
+        --for k,v in pairs(kLogLevels) do
+        --  if v == tbl then
+        --    return true
+        --  end
+        --end
+        --return false
       end
   },
 
@@ -124,6 +117,11 @@ local configOptions = {
 
 local techIdsLoaded = false
 local Mod = {}
+local kModName = "Mod"
+
+function Mod:ValidateModule(name, value)
+  return name and value and type(name) == "string" and type(value) == "table"
+end
 
 local function ValidateConfigOption(configVar, configOption)
   if type(configVar) ~= configOption.expectedType then
@@ -183,17 +181,122 @@ local function FindModName()
   return modName
 end
 
-local function GetLogLevels()
-  return kLogLevels
+function GetMod()
+  return Mod
 end
 
-function GetMod()
-  local kModName = FindModName()
-  return _G[kModName]
+local function LoadSharedFiles(module, p)
+  local path = Mod:FormatDir("Framework/" .. module, "Shared")
+
+  local SharedFiles = {}
+  Shared.GetMatchingFileNames(path, true, SharedFiles)
+
+  for j = 1, #SharedFiles do
+    p(string.format("Loading shared file: %s", SharedFiles[j]))
+    Script.Load(SharedFiles[j])
+    if GetFrameworkModuleChanges then
+      local name, value = GetFrameworkModuleChanges()
+      GetFrameworkModuleChanges = nil
+
+      if Mod:ValidateModule(name, value) then
+        p(string.format("Integrating module: %s", name))
+        Mod[name] = value
+      else
+        p(string.format("Not integrating module %s. Invalid module.", name))
+      end
+    end
+  end
+end
+
+local function SetupFileHooks(module, p)
+  local currentModule = "Framework/" .. module
+  local types = { "Halt", "Post", "Pre", "Replace" }
+
+  for j = 1, #types do
+    local hookType = types[j]
+    local path = Mod:FormatDir(currentModule, hookType)
+    local files = {}
+
+    Shared.GetMatchingFileNames(path, true, files)
+
+    for k = 1, #files do
+      local file = files[k]
+      local vpath = file:gsub(kModName .. "/.*/" .. hookType .. "/", "")
+
+      p(string.format("Hooking file: %s, Vanilla Path: %s, Method: %s", file, vpath, hookType), "all")
+      ModLoader.SetupFileHook(vpath, file, hookType:lower())
+    end
+  end
+end
+
+local function LoadClientScripts(module, p)
+  local path = Mod:FormatDir("Framework/" .. module, "Client")
+
+  local ClientFiles = {}
+  Shared.GetMatchingFileNames(path, true, ClientFiles)
+
+  for j = 1, #ClientFiles do
+    p(string.format("Loading client file: %s", ClientFiles[j]))
+    Script.Load(ClientFiles[j])
+  end
+end
+
+local function LoadServerScripts(module, p)
+  local path = Mod:FormatDir("Framework/" .. module, "Server")
+
+  local ServerFiles = {}
+  Shared.GetMatchingFileNames(path, true, ServerFiles)
+
+  for j = 1, #ServerFiles do
+    p(string.format("Loading server file: %s", ServerFiles[j]))
+    Script.Load(ServerFiles[j])
+  end
+end
+
+local function LoadPredictScripts(module, p)
+  local path = Mod:FormatDir("Framework/" .. module, "Predict")
+
+  local PredictFiles = {}
+  Shared.GetMatchingFileNames(path, true, PredictFiles)
+
+  for j = 1, #PredictFiles do
+    p("Loading predict file: %s", PredictFiles[j])
+    Script.Load(PredictFiles[j])
+  end
+end
+
+local function LoadFrameworkModule(module, hasLogging)
+  local p
+  if hasLogging == nil then hasLogging = Mod.Logger ~= nil end
+
+  -- logging might not have been setup at this point
+  if hasLogging then
+    p = function(str) Mod.Logger:PrintDebug(str) end
+  else
+    local vm = Client and "Client" or Server and "Server" or Predict and "Predict" or "None"
+    p = function(str) print(string.format("[%s - %s] %s", kModName, vm, str)) end
+  end
+
+  p("Loading framework module: " .. module)
+
+  -- load shared
+  LoadSharedFiles(module, p)
+
+  -- setup filehooks
+  SetupFileHooks(module, p)
+
+  -- load individual vm scripts
+  if Client then
+    LoadClientScripts(module, p)
+  elseif Server then
+    LoadServerScripts(module, p)
+  elseif Predict then
+    LoadPredictScripts(module, p)
+  end
 end
 
 function Mod:Initialise()
-  local kModName = FindModName()
+  kModName = FindModName()
   local current_vm = Client and "Client" or Server and "Server" or Predict and "Predict" or "Unknown"
 
   Shared.Message(string.format("[%s - %s] Loading framework %s", kModName, current_vm, self:GetFrameworkVersionPrintable()))
@@ -204,12 +307,12 @@ function Mod:Initialise()
     return
   end
 
-  self.kLogLevels = GetLogLevels()
+  LoadFrameworkModule("Logging", false)
 
   Script.Load("lua/" .. kModName .. "/Config.lua")
 
   local config = assert(GetModConfig, "Initialise: Config.lua malformed. Missing GetModConfig function.")
-  config = config(self.kLogLevels)
+  config = config(self.Logger:GetLogLevels())
 
   assert(config, "Initialise: Config.lua malformed. GetModConfig doesn't return anything.")
   assert(type(config) == "table", "Initialise: Config.lua malformed. GetModConfig doesn't return expected type.")
@@ -221,23 +324,10 @@ function Mod:Initialise()
   self.config, config = config, nil
 
   for _,v in ipairs(frameworkModules) do
-    assert(type(v) == "string", "Initialise: Invalid framework module")
-    --table.insert(self.config.modules, "Framework/" .. v)
+    LoadFrameworkModule(v, true)
   end
 
-  -- this is really bad for performance so lets do it on the client :D
-  if Client then
-    for _,v in ipairs(self.config.modules) do
-      local Files = {}
-      Shared.GetMatchingFileNames(self:FormatDir(v), true, Files)
-
-  	  if #Files == 0 then
-  		  Mod:Print("No files found for module: " .. v, Mod:GetLogLevels().warn)
-      end
-    end
-  end
-
-  _G[self.config.kModName] = self
+  _G[kModName] = self
   Shared.Message(string.format("[%s - %s] Framework %s loaded", kModName, current_vm, self:GetFrameworkVersionPrintable()))
 end
 
@@ -475,56 +565,6 @@ function Mod:RemoveFromEnum(tbl, key)
   end
 end
 
-function Mod:PrintCallStack()
-  Shared.Message(Script.CallStack())
-end
-
--- Shared.Message wrapper
-function Mod:Print(str, level, vm)
-  local strType = str and type(str) or "nil"
-  assert(strType == "string", "Print: First argument expected to be of type string, was " .. strType)
-
-  local kLogLevels = self:GetLogLevels()
-  local config = self:GetConfig()
-  local logLevel = self:GetConfigLogLevel()
-  local kModName = self:GetModName()
-
-  level = level or kLogLevels.info
-
-  local levelType = level and type(level) or "nil"
-  assert(levelType == "table", "Print: Second argument expected to be of type table, was " .. levelType)
-
-  if logLevel.level < level.level then
-    return
-  end
-
-  local current_vm = Client and "Client" or Server and "Server" or Predict and "Predict" or "Unknown"
-
-  local msg = string.format("[%s - %s] (%s) %s", kModName, current_vm, level.display, str)
-
-  if not vm
-  or vm == "Server" and Server
-  or vm == "Client" and Client
-  or vm == "Predict" and Predict
-  or vm == "all" then
-
-    Shared.Message(msg)
-  end
-end
-
--- Debug print
-function Mod:PrintDebug(str, vm)
-  local strType = str and type(str) or "nil"
-  assert(strType == "string", "DebugPrint: First argument expected to be of type string, was " .. strType)
-  self:Print(str, self.kLogLevels.debug, vm)
-end
-
--- Prints the mod version to console using the given vm
-function Mod:PrintVersion(vm)
-  local version = self:GetVersion()
-  self:Print(string.format("%s version: %s loaded", self.config.kModName, version), self.kLogLevels.info, vm)
-end
-
 -- Returns a string with the mod version
 function Mod:GetVersion()
   return string.format("v%s.%s", self.config.kModVersion, self.config.kModBuild);
@@ -537,12 +577,12 @@ function Mod:FormatDir(module, name, file)
 
   if name then
     if file then
-      return string.format("lua/%s/%s/%s.lua", self.config.kModName, module, name)
+      return string.format("lua/%s/%s/%s.lua", kModName, module, name)
     else
-      return string.format("lua/%s/%s/%s/*.lua", self.config.kModName, module, name)
+      return string.format("lua/%s/%s/%s/*.lua", kModName, module, name)
     end
   else
-    return string.format("lua/%s/%s/*.lua", self.config.kModName, module)
+    return string.format("lua/%s/%s/*.lua", kModName, module)
   end
 end
 
@@ -1028,7 +1068,7 @@ function Mod:GetConfigLogLevel()
 end
 
 function Mod:GetModName()
-  return self.config.kModName
+  return kModName
 end
 
 --[[
@@ -1068,7 +1108,7 @@ local function UpdateBindingData()
   for _,v in ipairs(bindingChanges) do
     local afterName = v[5]
 
-    Mod:PrintDebug("Adding new bind \"" .. v[1].. "\" after " .. afterName)
+    Mod.Logger:PrintDebug("Adding new bind \"" .. v[1].. "\" after " .. afterName)
 
     v[3] = Locale.ResolveString(v[3])
 
