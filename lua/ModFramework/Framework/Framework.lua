@@ -222,7 +222,7 @@ function Mod:Initialise()
 
   for _,v in ipairs(frameworkModules) do
     assert(type(v) == "string", "Initialise: Invalid framework module")
-    table.insert(self.config.modules, "Framework/" .. v)
+    --table.insert(self.config.modules, "Framework/" .. v)
   end
 
   -- this is really bad for performance so lets do it on the client :D
@@ -239,6 +239,10 @@ function Mod:Initialise()
 
   _G[self.config.kModName] = self
   Shared.Message(string.format("[%s - %s] Framework %s loaded", kModName, current_vm, self:GetFrameworkVersionPrintable()))
+end
+
+function Mod:GetFrameworkModules()
+  return frameworkModules
 end
 
 local kModMaxRecursionDepth = 5
