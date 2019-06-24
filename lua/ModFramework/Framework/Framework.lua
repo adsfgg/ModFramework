@@ -9,8 +9,6 @@ local frameworkModules = {
   "TechChanges",
 }
 
-local techIdsLoaded = false
-
 local Mod = {}
 local kModName = "Mod"
 
@@ -146,7 +144,7 @@ function Mod:Initialise()
 
   if _G[kModName] then
     Mod = _G[kModName]
-    Shared.Message(string.format("[%s - %s] Skipped loading framework %s", kModName, current_vm, self:GetFrameworkVersionPrintable()))
+    Mod.Logger:PrintInfo(string.format("Skipped loading framework %s", self:GetFrameworkVersionPrintable()))
     return
   end
 
@@ -173,7 +171,8 @@ function Mod:Initialise()
   end
 
   _G[kModName] = self
-  Shared.Message(string.format("[%s - %s] Framework %s loaded", kModName, current_vm, self:GetFrameworkVersionPrintable()))
+  -- Shared.Message(string.format("[%s - %s] Framework %s loaded", kModName, current_vm, self:GetFrameworkVersionPrintable()))
+  self.Logger:PrintInfo(string.format("Framework %s loaded", self:GetFrameworkVersionPrintable()))
 end
 
 function Mod:GetFrameworkModules()
@@ -183,6 +182,18 @@ end
 -- Returns a string with the mod version
 function Mod:GetVersion()
   return string.format("v%s.%s", self.config.kModVersion, self.config.kModBuild);
+end
+
+function Mod:GetFrameworkVersion()
+  return framework_version
+end
+
+function Mod:GetFrameworkBuild()
+  return framework_build
+end
+
+function Mod:GetFrameworkVersionPrintable()
+  return string.format("v%s.%s", self:GetFrameworkVersion(), self:GetFrameworkBuild())
 end
 
 function Mod:GetConfig()
@@ -266,23 +277,6 @@ end
 
 function Mod:LoadConfig()
   configOptions = LoadConfigFile(self:GetConfigFileName()) or defaultConfigOptions
-end
-
---[[
-=======================
-    Resource System
-=======================
-]]
-
-local guiTexturesToReplace = {}
-
-function Mod:ReplaceGUITexture(old, new)
-  assert(not guiTexturesToReplace[old], string.format("ReplaceGUITexture: The texture %q is already being replaced with %q.", old, guiTexturesToReplace[old]))
-  guiTexturesToReplace[old] = new
-end
-
-function Mod:GetGUITexturesToReplace()
-  return guiTexturesToReplace
 end
 
 -- We're finally done

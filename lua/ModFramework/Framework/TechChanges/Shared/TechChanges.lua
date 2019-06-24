@@ -1,5 +1,6 @@
 local Mod = GetMod()
 local Tech = {}
+local techIdsLoaded = false
 
 -- TODO: funcs to add tech
 -- TODO: Make tech tree changes automatic
