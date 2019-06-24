@@ -237,7 +237,7 @@ end
 -- i wish the # operator was deterministic
 function table.real_length(tbl)
   local count = 0
-  for k,v in pairs(tbl) do
+  for _,_ in pairs(tbl) do
     count = count + 1
   end
   return count
