@@ -11,141 +11,23 @@ local frameworkModules = {
 }
 
 local Mod = {}
-local kModName = "Mod"
-
-function Mod:ValidateModule(name, value)
-  if name and value and type(name) == "string" and type(value) == "table" then
-    return true
-  end
-
-  return false, "Invalid module"
-end
+local kModName = ""
 
 local function FindModName()
   local modName = debug.getinfo(1, "S").source:gsub("@lua/", ""):gsub("/Framework/.*%.lua", "")
   assert(modName and type(modName) == "string", "Error finding mod name. Please report.")
+  kModName = modName
   return modName
 end
 
 function GetMod()
-  return Mod
-end
-
-local function LoadSharedFiles(module, p)
-  local path = Mod:FormatDir("Framework/" .. module, "Shared")
-
-  local SharedFiles = {}
-  Shared.GetMatchingFileNames(path, true, SharedFiles)
-
-  for j = 1, #SharedFiles do
-    p(string.format("Loading shared file: %s", SharedFiles[j]))
-    Script.Load(SharedFiles[j])
-    if GetFrameworkModuleChanges then
-      local name, value = GetFrameworkModuleChanges()
-      GetFrameworkModuleChanges = nil
-      local valid, reason = Mod:ValidateModule(name, value)
-
-      if valid then
-        p(string.format("Integrating module: %s", name))
-        Mod[name] = value
-      else
-        p(string.format("Not integrating module %s: %s", name, reason))
-      end
-    end
-  end
-end
-
-local function SetupFileHooks(module, p)
-  local currentModule = "Framework/" .. module
-  local types = { "Halt", "Post", "Pre", "Replace" }
-
-  for j = 1, #types do
-    local hookType = types[j]
-    local path = Mod:FormatDir(currentModule, hookType)
-    local files = {}
-
-    Shared.GetMatchingFileNames(path, true, files)
-
-    for k = 1, #files do
-      local file = files[k]
-      local vpath = file:gsub(kModName .. "/.*/" .. hookType .. "/", "")
-
-      p(string.format("Hooking file: %s, Vanilla Path: %s, Method: %s", file, vpath, hookType), "all")
-      ModLoader.SetupFileHook(vpath, file, hookType:lower())
-    end
-  end
-end
-
-local function LoadClientScripts(module, p)
-  local path = Mod:FormatDir("Framework/" .. module, "Client")
-
-  local ClientFiles = {}
-  Shared.GetMatchingFileNames(path, true, ClientFiles)
-
-  for j = 1, #ClientFiles do
-    p(string.format("Loading client file: %s", ClientFiles[j]))
-    Script.Load(ClientFiles[j])
-  end
-end
-
-local function LoadServerScripts(module, p)
-  local path = Mod:FormatDir("Framework/" .. module, "Server")
-
-  local ServerFiles = {}
-  Shared.GetMatchingFileNames(path, true, ServerFiles)
-
-  for j = 1, #ServerFiles do
-    p(string.format("Loading server file: %s", ServerFiles[j]))
-    Script.Load(ServerFiles[j])
-  end
-end
-
-local function LoadPredictScripts(module, p)
-  local path = Mod:FormatDir("Framework/" .. module, "Predict")
-
-  local PredictFiles = {}
-  Shared.GetMatchingFileNames(path, true, PredictFiles)
-
-  for j = 1, #PredictFiles do
-    p("Loading predict file: %s", PredictFiles[j])
-    Script.Load(PredictFiles[j])
-  end
-end
-
-local function LoadFrameworkModule(module)
-  local p
-
-  -- logging might not have been setup at this point
-  if Mod.Logger ~= nil then
-    p = function(str) Mod.Logger:PrintDebug(str) end
-  else
-    local vm = Client and "Client" or Server and "Server" or Predict and "Predict" or "None"
-    p =
-    function(str)
-      --print(string.format("[%s - %s] %s", kModName, vm, str))
-    end
-  end
-
-  p("Loading framework module: " .. module)
-
-  -- load shared
-  LoadSharedFiles(module, p)
-
-  -- setup filehooks
-  SetupFileHooks(module, p)
-
-  -- load individual vm scripts
-  if Client then
-    LoadClientScripts(module, p)
-  elseif Server then
-    LoadServerScripts(module, p)
-  elseif Predict then
-    LoadPredictScripts(module, p)
-  end
+  local name = FindModName()
+  return _G[name] or Mod
 end
 
 function Mod:Initialise()
   kModName = FindModName()
+
   local current_vm = Client and "Client" or Server and "Server" or Predict and "Predict" or "Unknown"
 
   Shared.Message(string.format("[%s - %s] Loading framework %s", kModName, current_vm, self:GetFrameworkVersionPrintable()))
@@ -156,12 +38,16 @@ function Mod:Initialise()
     return
   end
 
+  Script.Load("lua/" .. kModName .. "/Framework/ModuleLoader.lua")
+
+  local LoadFrameworkModule = GetFrameworkModuleLoader()
+  GetFrameworkModuleLoader = nil
+
   LoadFrameworkModule("Logging")
 
   Script.Load("lua/" .. kModName .. "/Config.lua")
 
-  local config = assert(GetModConfig, "Initialise: Config.lua malformed. Missing GetModConfig function.")
-  config = config(self.Logger:GetLogLevels())
+  config = assert(GetModConfig, "Initialise: Config.lua malformed. Missing GetModConfig function.")(self.Logger:GetLogLevels())
 
   assert(config, "Initialise: Config.lua malformed. GetModConfig doesn't return anything.")
   assert(type(config) == "table", "Initialise: Config.lua malformed. GetModConfig doesn't return expected type.")
@@ -179,7 +65,15 @@ function Mod:Initialise()
   end
 
   _G[kModName] = self
-   Shared.Message(string.format("[%s - %s] Framework %s loaded", kModName, current_vm, self:GetFrameworkVersionPrintable()))
+  Shared.Message(string.format("[%s - %s] Framework %s loaded", kModName, current_vm, self:GetFrameworkVersionPrintable()))
+end
+
+function Mod:ValidateModule(name, value)
+  if name and value and type(name) == "string" and type(value) == "table" then
+    return true
+  end
+
+  return false, "Invalid module"
 end
 
 function Mod:GetFrameworkModules()
@@ -226,12 +120,12 @@ function Mod:FormatDir(module, name, file)
 
   if name then
     if file then
-      return string.format("lua/%s/%s/%s.lua", kModName, module, name)
+      return string.format("lua/%s/%s/%s.lua", self:GetModName(), module, name)
     else
-      return string.format("lua/%s/%s/%s/*.lua", kModName, module, name)
+      return string.format("lua/%s/%s/%s/*.lua", self:GetModName(), module, name)
     end
   else
-    return string.format("lua/%s/%s/*.lua", kModName, module)
+    return string.format("lua/%s/%s/*.lua", self:GetModName(), module)
   end
 end
 
