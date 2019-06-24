@@ -160,7 +160,7 @@ function Mod:Initialise()
 
   Script.Load("lua/" .. kModName .. "/Framework/ConfigValidation.lua")
 
-  valid, reason = GetFrameworkValidator(config)
+  valid, reason = RunFrameworkValidator(config)
   assert(valid, "Initialise: Config failed validation. " .. reason)
 
   config.kModName = kModName
@@ -171,8 +171,7 @@ function Mod:Initialise()
   end
 
   _G[kModName] = self
-  -- Shared.Message(string.format("[%s - %s] Framework %s loaded", kModName, current_vm, self:GetFrameworkVersionPrintable()))
-  self.Logger:PrintInfo(string.format("Framework %s loaded", self:GetFrameworkVersionPrintable()))
+   Shared.Message(string.format("[%s - %s] Framework %s loaded", kModName, current_vm, self:GetFrameworkVersionPrintable()))
 end
 
 function Mod:GetFrameworkModules()
@@ -206,6 +205,22 @@ end
 
 function Mod:GetModName()
   return kModName
+end
+
+-- Returns the relative ns2 path used to find lua files
+function Mod:FormatDir(module, name, file)
+  local moduleType = module and type(module) or "nil"
+  assert(moduleType == "string", "FormatDir: First argument expected to be of type string, was " .. moduleType)
+
+  if name then
+    if file then
+      return string.format("lua/%s/%s/%s.lua", kModName, module, name)
+    else
+      return string.format("lua/%s/%s/%s/*.lua", kModName, module, name)
+    end
+  else
+    return string.format("lua/%s/%s/*.lua", kModName, module)
+  end
 end
 
 --[[

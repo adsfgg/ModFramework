@@ -1,3 +1,4 @@
+local Mod = GetMod()
 local configOptions = {
     {
         var             = "kLogLevel",
@@ -9,8 +10,7 @@ local configOptions = {
         validator       =
         function(tbl)
             assert(tbl)
-            return true
-            for k,v in pairs(kLogLevels) do
+            for _,v in pairs(Mod.Logger:GetLogLevels()) do
                 if v == tbl then
                     return true
                 end
@@ -65,7 +65,7 @@ local configOptions = {
         validator       =
         function(tbl)
             assert(tbl)
-            for k,v in ipairs(tbl) do
+            for _,v in ipairs(tbl) do
                 if type(v) ~= "string" then
                     return false
                 end
@@ -158,6 +158,6 @@ local function ValidateConfig(config)
     return true, "passed"
 end
 
-function GetFrameworkValidator()
-    return ValidateConfig
+function RunFrameworkValidator(config)
+    return ValidateConfig(config)
 end

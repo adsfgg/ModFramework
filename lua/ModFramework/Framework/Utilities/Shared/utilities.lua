@@ -231,22 +231,6 @@ function Utility:RemoveFromEnum(tbl, key)
     end
 end
 
--- Returns the relative ns2 path used to find lua files
-function Utility:FormatDir(module, name, file)
-    local moduleType = module and type(module) or "nil"
-    assert(moduleType == "string", "FormatDir: First argument expected to be of type string, was " .. moduleType)
-
-    if name then
-        if file then
-            return string.format("lua/%s/%s/%s.lua", kModName, module, name)
-        else
-            return string.format("lua/%s/%s/%s/*.lua", kModName, module, name)
-        end
-    else
-        return string.format("lua/%s/%s/*.lua", kModName, module)
-    end
-end
-
 function GetFrameworkModuleChanges()
     return "Utility", Utility
 end
