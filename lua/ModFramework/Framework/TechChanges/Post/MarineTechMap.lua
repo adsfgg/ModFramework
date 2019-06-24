@@ -1,4 +1,5 @@
 local Mod = GetMod()
+local Tech = Mod.Tech
 
 function recalculateTechTreeLines()
 	kMarineLines =
@@ -56,13 +57,13 @@ function recalculateTechTreeLines()
 	return kMarineLines
 end
 
-local techToChange = Mod:GetMarineTechMapChanges()
-local techToAdd = Mod:GetMarineTechMapAdditions()
-local techToRemove = Mod:GetMarineTechMapDeletions()
+local techToChange = Tech:GetMarineTechMapChanges()
+local techToAdd = Tech:GetMarineTechMapAdditions()
+local techToRemove = Tech:GetMarineTechMapDeletions()
 
-local linesToChange = Mod:GetMarineTechMapLineChanges()
-local linesToAdd = Mod:GetMarineTechMapLineAdditions()
-local linesToRemove = Mod:GetMarineTechMapLineDeletions()
+local linesToChange = Tech:GetMarineTechMapLineChanges()
+local linesToAdd = Tech:GetMarineTechMapLineAdditions()
+local linesToRemove = Tech:GetMarineTechMapLineDeletions()
 
 -- techtree tech
 

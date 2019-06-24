@@ -6,8 +6,8 @@ local Mod = _G[kModName]
 
 Mod.Logger:PrintDebug("Setting up file hooks", "all")
 
-for i = 1, #Mod.config.modules do
-	local currentModule = Mod.config.modules[i]
+for i = 1, #Mod:GetModules() do
+	local currentModule = Mod:GetModules()[i]
 	local types = { "Halt", "Post", "Pre", "Replace" }
 
 	for j = 1, #types do

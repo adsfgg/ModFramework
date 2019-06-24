@@ -1,12 +1,13 @@
 local Mod = GetMod()
+local Tech = Mod.Tech
 
-local techToChange = Mod:GetAlienTechMapChanges()
-local techToAdd = Mod:GetAlienTechMapAdditions()
-local techToRemove = Mod:GetAlienTechMapDeletions()
+local techToChange = Tech:GetAlienTechMapChanges()
+local techToAdd = Tech:GetAlienTechMapAdditions()
+local techToRemove = Tech:GetAlienTechMapDeletions()
 
-local linesToChange = Mod:GetAlienTechMapLineChanges()
-local linesToAdd = Mod:GetAlienTechMapLineAdditions()
-local linesToRemove = Mod:GetAlienTechMapLineDeletions()
+local linesToChange = Tech:GetAlienTechMapLineChanges()
+local linesToAdd = Tech:GetAlienTechMapLineAdditions()
+local linesToRemove = Tech:GetAlienTechMapLineDeletions()
 
 -- techtree tech
 

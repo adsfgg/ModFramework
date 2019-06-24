@@ -3,6 +3,10 @@ local Bindings = {}
 
 local bindingAdditions = {}
 
+function Bindings:GetBindingAdditions()
+    return bindingAdditions
+end
+
 function Bindings:AddNewBind(name, type, transKey, default, afterName)
     assert(name)
     assert(type)
@@ -17,9 +21,9 @@ function GetFrameworkModuleChanges()
 end
 
 local function UpdateBindingData()
-    local globalControlBindings = Mod:GetLocalVariable(BindingsUI_GetBindingsData, "globalControlBindings")
-    local defaults = Mod:GetLocalVariable(GetDefaultInputValue, "defaults")
-    local bindingChanges = Mod:GetBindingAdditions()
+    local globalControlBindings = Mod.Utilities:GetLocalVariable(BindingsUI_GetBindingsData, "globalControlBindings")
+    local defaults = Mod.Utilities:GetLocalVariable(GetDefaultInputValue, "defaults")
+    local bindingChanges = Bindings:GetBindingAdditions()
 
     for _,v in ipairs(bindingChanges) do
         local afterName = v[5]
@@ -32,8 +36,8 @@ local function UpdateBindingData()
 
         -- globalControlBindingss
 
-        for i,v in ipairs(globalControlBindings) do
-            if v == afterName then
+        for i, bind in ipairs(globalControlBindings) do
+            if bind == afterName then
                 index = i + 4
             end
         end

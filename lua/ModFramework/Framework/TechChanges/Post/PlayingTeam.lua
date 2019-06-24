@@ -1,15 +1,16 @@
 local Mod = GetMod()
+local Tech = Mod.Tech
 
 local oldInitTechTree = PlayingTeam.InitTechTree
 
 function PlayingTeam:InitTechTree()
 	oldInitTechTree(self)
 
-	local researchToAdd = Mod:GetResearchToAdd()
-	local activationToAdd = Mod:GetActivationToAdd()
-	local buyToAdd = Mod:GetBuyNodesToAdd()
-	local buildToAdd = Mod:GetBuildNodesToAdd()
-	local upgradesToAdd = Mod:GetUpgradesToAdd()
+	local researchToAdd = Tech:GetResearchToAdd()
+	local activationToAdd = Tech:GetActivationToAdd()
+	local buyToAdd = Tech:GetBuyNodesToAdd()
+	local buildToAdd = Tech:GetBuildNodesToAdd()
+	local upgradesToAdd = Tech:GetUpgradesToAdd()
 
 	for _, value in ipairs(researchToAdd) do
 		Mod.Logger:PrintDebug("Adding research node: " .. (EnumToString(kTechId, value[1]) or value[1]) .. ", Team: " .. self:GetTeamNumber(), "all")

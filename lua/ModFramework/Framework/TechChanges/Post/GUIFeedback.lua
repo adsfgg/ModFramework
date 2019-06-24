@@ -1,6 +1,6 @@
 local Mod = GetMod()
 
-if Mod.config.kShowInFeedbackText then
+if Mod:GetConfig().kShowInFeedbackText then
 
 	local originalFeedbackInit
 

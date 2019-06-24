@@ -55,6 +55,13 @@ function Logger:PrintDebug(str, vm)
     self:Print(str, kLogLevels.debug, vm)
 end
 
+-- Debug print
+function Logger:PrintInfo(str, vm)
+    local strType = str and type(str) or "nil"
+    assert(strType == "string", "PrintInfo: First argument expected to be of type string, was " .. strType)
+    self:Print(str, kLogLevels.info, vm)
+end
+
 -- Warning print
 function Logger:PrintWarn(str, vm)
     local strType = str and type(str) or "nil"
@@ -79,7 +86,7 @@ end
 -- Prints the mod version to console using the given vm
 function Logger:PrintVersion(vm)
     local version = Mod:GetVersion()
-    self:PrintInfo(string.format("%s version: %s loaded", Mod.config.kModName, version), vm)
+    self:PrintInfo(string.format("%s version: %s loaded", Mod:GetModName(), version), vm)
 end
 
 function GetFrameworkModuleChanges()

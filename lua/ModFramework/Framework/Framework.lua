@@ -4,6 +4,7 @@ local framework_build = "20.2"
 local frameworkModules = {
   "Utilities",
   "Bindings",
+  "ModConfig",
   "ConsistencyCheck",
   "ResourceSystem",
   "TechChanges",
@@ -111,16 +112,18 @@ local function LoadPredictScripts(module, p)
   end
 end
 
-local function LoadFrameworkModule(module, hasLogging)
+local function LoadFrameworkModule(module)
   local p
-  if hasLogging == nil then hasLogging = Mod.Logger ~= nil end
 
   -- logging might not have been setup at this point
-  if hasLogging then
+  if Mod.Logger ~= nil then
     p = function(str) Mod.Logger:PrintDebug(str) end
   else
     local vm = Client and "Client" or Server and "Server" or Predict and "Predict" or "None"
-    p = function(str) print(string.format("[%s - %s] %s", kModName, vm, str)) end
+    p =
+    function(str)
+      --print(string.format("[%s - %s] %s", kModName, vm, str))
+    end
   end
 
   p("Loading framework module: " .. module)
@@ -153,7 +156,7 @@ function Mod:Initialise()
     return
   end
 
-  LoadFrameworkModule("Logging", false)
+  LoadFrameworkModule("Logging")
 
   Script.Load("lua/" .. kModName .. "/Config.lua")
 
@@ -172,7 +175,7 @@ function Mod:Initialise()
   self.config, config = config, nil
 
   for _,v in ipairs(frameworkModules) do
-    LoadFrameworkModule(v, true)
+    LoadFrameworkModule(v)
   end
 
   _G[kModName] = self
@@ -210,6 +213,10 @@ end
 
 function Mod:GetModName()
   return kModName
+end
+
+function Mod:GetModules()
+  return self.config.modules
 end
 
 -- Returns the relative ns2 path used to find lua files
@@ -250,53 +257,6 @@ function table.contains(table, element)
     end
   end
   return false
-end
-
---[[
-====================
-    Config Funcs
-====================
-]]
-
-local configOptions = {}
-local defaultConfigOptions = {}
-
-function Mod:GetConfigFileName()
-  local modName = self:GetModName()
-
-  if Server then
-    return modName .. "_Server.json"
-  end
-
-  return modName .. ".json"
-end
-
-function Mod:RegisterConfigOption(name, value)
-  assert(not configOptions[name], string.format("RegisterConfigOption: %q is already registered", name))
-  defaultConfigOptions[name] = value
-end
-
-function Mod:GetDefaultConfigOptions()
-  return defaultConfigOptions
-end
-
-function Mod:GetConfigOption(name)
-  assert(configOptions[name], string.format("GetConfigOption: No config option with the name %q is registered", name))
-  return configOptions[name]
-end
-
-function Mod:UpdateConfigOption(name, value)
-  assert(configOptions[name], string.format("UpdateConfigOption: No config option with the name %q is registered", name))
-  configOptions[name] = value
-  self:SaveConfigOptions()
-end
-
-function Mod:SaveConfigOptions()
-  SaveConfigFile(self:GetConfigFileName(), configOptions)
-end
-
-function Mod:LoadConfig()
-  configOptions = LoadConfigFile(self:GetConfigFileName()) or defaultConfigOptions
 end
 
 -- We're finally done

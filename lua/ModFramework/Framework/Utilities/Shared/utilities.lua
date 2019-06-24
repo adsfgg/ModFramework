@@ -1,4 +1,3 @@
-local Mod = GetMod()
 local Utility = {}
 
 local kModMaxRecursionDepth = 5
@@ -232,5 +231,5 @@ function Utility:RemoveFromEnum(tbl, key)
 end
 
 function GetFrameworkModuleChanges()
-    return "Utility", Utility
+    return "Utilities", Utility
 end

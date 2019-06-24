@@ -1,4 +1,3 @@
-local Mod = GetMod()
 local ResourceSystem = {}
 
 local guiTexturesToReplace = {}

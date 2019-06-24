@@ -2,7 +2,7 @@ local Mod = GetMod()
 
 Mod.Logger:PrintDebug("Loading Client files", "Client")
 
-for i = 1, #Mod.config.modules do
+for i = 1, #Mod:GetModules() do
 	local path = Mod:FormatDir(Mod.config.modules[i], "Client")
 
 	local ClientFiles = {}
@@ -19,7 +19,7 @@ Mod.Logger:PrintDebug("Client files loaded.", "Client")
 Mod.Logger:PrintVersion("Client")
 
 if Mod:GetConfig().use_config == "client" or Mod:GetConfig().use_config == "both" then
-	WriteDefaultConfigFile(Mod:GetConfigFileName(), Mod:GetDefaultConfigOptions())
+	WriteDefaultConfigFile(Mod.ModConfig:GetConfigFileName(), Mod.ModConfig:GetDefaultConfigOptions())
 
-	Mod:LoadConfig()
+	Mod.ModConfig:LoadConfig()
 end

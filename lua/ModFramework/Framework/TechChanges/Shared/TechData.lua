@@ -1,8 +1,9 @@
 local Mod = GetMod()
+local Tech = Mod.Tech
 
 local function TechDataChanges(techData)
-  local techToRemove = Mod:GetTechToRemove()
-  local techToChange = Mod:GetTechToChange()
+  local techToRemove = Tech:GetTechToRemove()
+  local techToChange = Tech:GetTechToChange()
 
   for techIndex = #techData, 1, -1 do
     local record = techData[techIndex]
@@ -27,7 +28,7 @@ function BuildTechData()
 
   TechDataChanges(techData)
 
-  local techToAdd = Mod:GetTechToAdd()
+  local techToAdd = Tech:GetTechToAdd()
   for _,v in ipairs(techToAdd) do
     Mod.Logger:PrintDebug("Adding tech: " .. v[kTechDataDisplayName])
     table.insert(techData, v)

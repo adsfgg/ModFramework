@@ -1,7 +1,8 @@
 local Mod = GetMod()
+local Tech = Mod.Tech
 
-local upgradeToRemove = Mod:GetUpgradesToRemove()
-local upgradeToChange = Mod:GetUpgradesToChange()
+local upgradeToRemove = Tech:GetUpgradesToRemove()
+local upgradeToChange = Tech:GetUpgradesToChange()
 
 local oldAddUpgradeNode = TechTree.AddUpgradeNode
   function TechTree:AddUpgradeNode(techId, prereq1, prereq2)
@@ -18,8 +19,8 @@ local oldAddUpgradeNode = TechTree.AddUpgradeNode
   end
 end
 
-local researchToRemove = Mod:GetResearchToRemove()
-local researchToChange = Mod:GetResearchToChange()
+local researchToRemove = Tech:GetResearchToRemove()
+local researchToChange = Tech:GetResearchToChange()
 
 local oldAddResearchNode = TechTree.AddResearchNode
 function TechTree:AddResearchNode(techId, prereq1, prereq2, addOnTechId)
@@ -35,8 +36,8 @@ function TechTree:AddResearchNode(techId, prereq1, prereq2, addOnTechId)
   end
 end
 
-local targetedActivationToRemove = Mod:GetTargetedActivationToRemove()
-local targetedActivationToChange = Mod:GetTargetedActivationToChange()
+local targetedActivationToRemove = Tech:GetTargetedActivationToRemove()
+local targetedActivationToChange = Tech:GetTargetedActivationToChange()
 
 local oldAddTargetedActivation = TechTree.AddTargetedActivation
 function TechTree:AddTargetedActivation(techId, prereq1, prereq2)
@@ -53,8 +54,8 @@ function TechTree:AddTargetedActivation(techId, prereq1, prereq2)
   end
 end
 
-local buyToRemove = Mod:GetBuyNodesToRemove()
-local buyToChange = Mod:GetBuyNodesToChange()
+local buyToRemove = Tech:GetBuyNodesToRemove()
+local buyToChange = Tech:GetBuyNodesToChange()
 
 local oldAddBuyNode = TechTree.AddBuyNode
 function TechTree:AddBuyNode(techId, prereq1, prereq2, addOnTechId)
@@ -71,8 +72,8 @@ function TechTree:AddBuyNode(techId, prereq1, prereq2, addOnTechId)
   end
 end
 
-local buildToRemove = Mod:GetBuildNodesToRemove()
-local buildToChange = Mod:GetBuildNodesToChange()
+local buildToRemove = Tech:GetBuildNodesToRemove()
+local buildToChange = Tech:GetBuildNodesToChange()
 
 local oldAddBuildNode = TechTree.AddBuildNode
 function TechTree:AddBuildNode(techId, prereq1, prereq2, isRequired)
@@ -89,8 +90,8 @@ function TechTree:AddBuildNode(techId, prereq1, prereq2, isRequired)
   end
 end
 
-local passiveToRemove = Mod:GetPassiveToRemove()
-local passiveToChange = Mod:GetPassiveToChange()
+local passiveToRemove = Tech:GetPassiveToRemove()
+local passiveToChange = Tech:GetPassiveToChange()
 
 local oldAddPassive = TechTree.AddPassive
 function TechTree:AddPassive(techId, prereq1, prereq2)
@@ -107,8 +108,8 @@ function TechTree:AddPassive(techId, prereq1, prereq2)
   end
 end
 
-local specialToRemove = Mod:GetSpecialToRemove()
-local specialToChange = Mod:GetSpecialToChange()
+local specialToRemove = Tech:GetSpecialToRemove()
+local specialToChange = Tech:GetSpecialToChange()
 
 local oldAddSpecial = TechTree.AddSpecial
 function TechTree:AddSpecial(techId, prereq1, prereq2, requiresTarget)
@@ -125,8 +126,8 @@ function TechTree:AddSpecial(techId, prereq1, prereq2, requiresTarget)
   end
 end
 
-local manufactureNodesToRemove = Mod:GetManufactureNodesToRemove()
-local manufactureNodesToChange = Mod:GetManufactureNodesToChange()
+local manufactureNodesToRemove = Tech:GetManufactureNodesToRemove()
+local manufactureNodesToChange = Tech:GetManufactureNodesToChange()
 
 local oldAddManufactureNode = TechTree.AddManufactureNode
 function TechTree:AddManufactureNode(techId, prereq1, prereq2, isRequired)
@@ -143,7 +144,7 @@ function TechTree:AddManufactureNode(techId, prereq1, prereq2, isRequired)
   end
 end
 
-local ordersToRemove = Mod:GetOrdersToRemove()
+local ordersToRemove = Tech:GetOrdersToRemove()
 
 local oldAddOrder = TechTree.AddOrder
 function TechTree:AddOrder(techId)
@@ -155,8 +156,8 @@ function TechTree:AddOrder(techId)
   end
 end
 
-local activationToRemove = Mod:GetActivationToRemove()
-local activationToChange = Mod:GetActivationToChange()
+local activationToRemove = Tech:GetActivationToRemove()
+local activationToChange = Tech:GetActivationToChange()
 
 local oldAddActivation = TechTree.AddActivation
 function TechTree:AddActivation(techId, prereq1, prereq2)
@@ -173,8 +174,8 @@ function TechTree:AddActivation(techId, prereq1, prereq2)
   end
 end
 
-local targetedBuyToRemove = Mod:GetTargetedBuyToRemove()
-local targetedBuyToChange = Mod:GetTargetedBuyToChange()
+local targetedBuyToRemove = Tech:GetTargetedBuyToRemove()
+local targetedBuyToChange = Tech:GetTargetedBuyToChange()
 
 local oldAddTargetedBuyNode = TechTree.AddTargetedBuyNode
 function TechTree:AddTargetedBuyNode(techId, prereq1, prereq2, addOnTechId)

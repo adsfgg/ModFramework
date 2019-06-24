@@ -261,7 +261,7 @@ end
 -- getters BOOOOO
 
 function Tech:GetTechIdsToAdd()
-    return self.config.techIdsToAdd
+    return Mod:GetConfig().techIdsToAdd
 end
 
 function Tech:GetBindingAdditions()
