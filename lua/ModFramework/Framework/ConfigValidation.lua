@@ -103,6 +103,35 @@ local configOptions = {
         default         = {},
         displayDefault  = "new table",
         warn            = false,
+        validator       =
+        function(tbl)
+            assert(tbl)
+            for _,v in ipairs(tbl) do
+                if type(v) ~= "string" then
+                    return false
+                end
+            end
+            return true
+        end
+    },
+
+    {
+        var             = "libraries",
+        expectedType    = "table",
+        required        = false,
+        default         = {},
+        displayDefault  = "new table",
+        warn            = false,
+        validator       =
+        function(tbl)
+            assert(tbl)
+            for _,v in ipairs(tbl) do
+                if type(v) ~= "string" then
+                    return false
+                end
+            end
+            return true
+        end
     }
 }
 

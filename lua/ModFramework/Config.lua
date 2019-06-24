@@ -10,6 +10,9 @@ function GetModConfig(kLogLevels)
 	config.techIdsToAdd = {
 	}
 
+	config.libraries = {
+	}
+
 	config.modules =
 	{
 	}

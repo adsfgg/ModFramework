@@ -3,6 +3,7 @@ local framework_build = "20.2"
 
 local frameworkModules = {
   "Utilities",
+  "LibraryLoader",
   "Bindings",
   "ModConfig",
   "ConsistencyCheck",
@@ -64,6 +65,8 @@ function Mod:Initialise()
   for _,v in ipairs(frameworkModules) do
     LoadFrameworkModule(v)
   end
+
+  Mod.Libraries:LoadAllLibraries(self.config.libraries)
 
   _G[kModName] = self
   Shared.Message(string.format("[%s - %s] Framework %s loaded", kModName, current_vm, self:GetFrameworkVersionPrintable()))
