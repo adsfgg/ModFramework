@@ -13,7 +13,11 @@ local Mod = {}
 local kModName = "Mod"
 
 function Mod:ValidateModule(name, value)
-  return name and value and type(name) == "string" and type(value) == "table"
+  if name and value and type(name) == "string" and type(value) == "table" then
+    return true
+  end
+
+  return false, "Invalid module"
 end
 
 local function FindModName()
@@ -38,12 +42,13 @@ local function LoadSharedFiles(module, p)
     if GetFrameworkModuleChanges then
       local name, value = GetFrameworkModuleChanges()
       GetFrameworkModuleChanges = nil
+      local valid, reason = Mod:ValidateModule(name, value)
 
-      if Mod:ValidateModule(name, value) then
+      if valid then
         p(string.format("Integrating module: %s", name))
         Mod[name] = value
       else
-        p(string.format("Not integrating module %s. Invalid module.", name))
+        p(string.format("Not integrating module %s: %s", name, reason))
       end
     end
   end
