@@ -13,8 +13,7 @@ function GetModConfig(kLogLevels)
 	config.libraries = {
 	}
 
-	config.modules =
-	{
+	config.modules = {
 	}
 
 	return config
