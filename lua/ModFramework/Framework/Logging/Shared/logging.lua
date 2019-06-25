@@ -55,7 +55,7 @@ function Logger:PrintDebug(str, vm)
     self:Print(str, kLogLevels.debug, vm)
 end
 
--- Debug print
+-- Info print
 function Logger:PrintInfo(str, vm)
     local strType = str and type(str) or "nil"
     assert(strType == "string", "PrintInfo: First argument expected to be of type string, was " .. strType)

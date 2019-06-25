@@ -59,6 +59,10 @@ function Mod:Initialise()
   valid, reason = RunFrameworkValidator(config)
   assert(valid, "Initialise: Config failed validation. " .. reason)
 
+  for i,v in ipairs(config.modules) do
+    config.modules[i] = "Modules/" .. v
+  end
+
   config.kModName = kModName
   self.config, config = config, nil
 
