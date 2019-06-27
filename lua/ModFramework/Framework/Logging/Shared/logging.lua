@@ -85,7 +85,7 @@ end
 
 -- Prints the mod version to console using the given vm
 function Logger:PrintVersion(vm)
-    local version = Mod:GetVersion()
+    local version = Mod.Versioning:GetVersion()
     self:PrintInfo(string.format("%s version: %s loaded", Mod:GetModName(), version), vm)
 end
 

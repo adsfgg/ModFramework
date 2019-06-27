@@ -1,7 +1,9 @@
-local framework_version = "0"
-local framework_build = "20.2"
+local framework_version = "0.23.0-beta"
 
+local Mod = {}
+local kModName = ""
 local frameworkModules = {
+  "Versioning",
   "Utilities",
   "LibraryLoader",
   "Bindings",
@@ -10,9 +12,6 @@ local frameworkModules = {
   "ResourceSystem",
   "TechChanges",
 }
-
-local Mod = {}
-local kModName = ""
 
 local function FindModName()
   local modName = debug.getinfo(1, "S").source:gsub("@lua/", ""):gsub("/Framework/.*%.lua", "")
@@ -31,11 +30,11 @@ function Mod:Initialise()
 
   local current_vm = Client and "Client" or Server and "Server" or Predict and "Predict" or "Unknown"
 
-  Shared.Message(string.format("[%s - %s] Loading framework %s", kModName, current_vm, self:GetFrameworkVersionPrintable()))
+  Shared.Message(string.format("[%s - %s] Loading framework %s", kModName, current_vm, self:GetFrameworkVersion()))
 
   if _G[kModName] then
     Mod = _G[kModName]
-    Mod.Logger:PrintInfo(string.format("Skipped loading framework %s", self:GetFrameworkVersionPrintable()))
+    Mod.Logger:PrintInfo(string.format("Skipped loading framework %s", self:GetFrameworkVersion()))
     return
   end
 
@@ -70,10 +69,12 @@ function Mod:Initialise()
     LoadFrameworkModule(v)
   end
 
+  assert(GetVersionInformation, "Config.lua malformed. GetVersionInformation does not exist")(Mod.Versioning)
+
   Mod.Libraries:LoadAllLibraries(self.config.libraries)
 
   _G[kModName] = self
-  Shared.Message(string.format("[%s - %s] Framework %s loaded", kModName, current_vm, self:GetFrameworkVersionPrintable()))
+  Shared.Message(string.format("[%s - %s] Framework %s loaded", kModName, current_vm, self:GetFrameworkVersion()))
 end
 
 function Mod:ValidateModule(name, value)
@@ -86,23 +87,6 @@ end
 
 function Mod:GetFrameworkModules()
   return frameworkModules
-end
-
--- Returns a string with the mod version
-function Mod:GetVersion()
-  return string.format("v%s.%s", self.config.kModVersion, self.config.kModBuild);
-end
-
-function Mod:GetFrameworkVersion()
-  return framework_version
-end
-
-function Mod:GetFrameworkBuild()
-  return framework_build
-end
-
-function Mod:GetFrameworkVersionPrintable()
-  return string.format("v%s.%s", self:GetFrameworkVersion(), self:GetFrameworkBuild())
 end
 
 function Mod:GetConfig()
@@ -119,6 +103,10 @@ end
 
 function Mod:GetModules()
   return self.config.modules
+end
+
+function Mod:GetFrameworkVersion()
+  return framework_version
 end
 
 -- Returns the relative ns2 path used to find lua files
@@ -161,7 +149,6 @@ function table.contains(table, element)
   return false
 end
 
--- We're finally done
 -- Init the stuff
 
 Mod:Initialise()

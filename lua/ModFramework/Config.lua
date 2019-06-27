@@ -2,7 +2,7 @@ function GetModConfig(kLogLevels)
 	local config = {}
 
 	config.kLogLevel = kLogLevels.debug
-	config.kShowInFeedbackText = false
+	config.kShowInFeedbackText = true
 	config.kModVersion = "0"
 	config.kModBuild = "1"
 	config.disableRanking = false
@@ -17,4 +17,8 @@ function GetModConfig(kLogLevels)
 	}
 
 	return config
+end
+
+function GetVersionInformation(Versioning)
+	Versioning:SetVersion(1, 2, 3, "rc1")
 end
