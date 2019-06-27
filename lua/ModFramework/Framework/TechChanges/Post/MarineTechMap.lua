@@ -1,8 +1,8 @@
 local Mod = GetMod()
 local Tech = Mod.Tech
 
-function recalculateTechTreeLines()
-	kMarineLines =
+local function recalculateTechTreeLines()
+	local kMarineLines =
 	{
 		GetLinePositionForTechMap(kMarineTechMap, kTechId.CommandStation, kTechId.Extractor),
 		GetLinePositionForTechMap(kMarineTechMap, kTechId.CommandStation, kTechId.InfantryPortal),
@@ -12,13 +12,9 @@ function recalculateTechTreeLines()
 		-- observatory:
 		{ 6, 5, 7, 5 },
 		{ 7, 7, 9, 7 },
-		-- nano shield:
-		{ 7, 4.5, 8, 4.5},
-		-- cat pack tech:
-		{ 7, 5.5, 8, 5.5},
 
-		-- power surge tech
-		{ 7, 6.5, 8, 6.5},
+		-- AdvancedMarineSupport:
+		{ 7, 4.5, 8, 4.5},
 
 		GetLinePositionForTechMap(kMarineTechMap, kTechId.Armory, kTechId.GrenadeTech),
 		GetLinePositionForTechMap(kMarineTechMap, kTechId.Armory, kTechId.MinesTech),
