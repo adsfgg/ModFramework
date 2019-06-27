@@ -21,8 +21,8 @@ function GetFrameworkModuleChanges()
 end
 
 local function UpdateBindingData()
-    local globalControlBindings = Mod.Utilities:GetLocalVariable(BindingsUI_GetBindingsData, "globalControlBindings")
-    local defaults = Mod.Utilities:GetLocalVariable(GetDefaultInputValue, "defaults")
+    local globalControlBindings = debug.getupvaluex(BindingsUI_GetBindingsData, "globalControlBindings")
+    local defaults = debug.getupvaluex(GetDefaultInputValue, "defaults")
     local bindingChanges = Bindings:GetBindingAdditions()
 
     for _,v in ipairs(bindingChanges) do

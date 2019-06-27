@@ -6,5 +6,3 @@ local newTechNames = Mod.Tech:GetTechIdsToAdd()
 for _,v in ipairs(newTechNames) do
   Mod.Utilities:AppendToEnum(kTechId, v)
 end
-
-Mod.Tech:OnTechIdsAdded()

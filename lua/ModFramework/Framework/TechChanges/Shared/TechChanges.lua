@@ -1,6 +1,5 @@
 local Mod = GetMod()
 local Tech = {}
-local techIdsLoaded = false
 
 -- TODO: funcs to add tech
 -- TODO: Make tech tree changes automatic
@@ -252,10 +251,6 @@ end
 
 function Tech:ChangeTargetedBuy(techId, prereq1, prereq2, addOnTechId)
     table.insert(kTargetedBuyToChange, techId, { techId, prereq1, prereq2, addOnTechId } )
-end
-
-function Tech:OnTechIdsAdded()
-    techIdsLoaded = true
 end
 
 -- getters BOOOOO

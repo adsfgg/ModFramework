@@ -1,6 +1,6 @@
 local Mod = GetMod()
 
-local kTechIdToMaterialOffset = Mod.Utilities:GetLocalVariable( GetMaterialXYOffset,   "kTechIdToMaterialOffset" )
+local kTechIdToMaterialOffset = debug.getupvaluex( GetMaterialXYOffset,   "kTechIdToMaterialOffset" )
 local additions = Mod.Tech:GetTechIdToMaterialOffsetAdditions()
 
 for _,v in ipairs(additions) do
