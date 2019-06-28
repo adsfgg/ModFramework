@@ -1,4 +1,4 @@
-local framework_version = "0.23.0-beta"
+local framework_version = "0.23.1-beta"
 
 local Mod = {}
 local kModName = ""
