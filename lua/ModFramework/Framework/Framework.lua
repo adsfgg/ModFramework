@@ -1,4 +1,4 @@
-local framework_version = "0.23.3-beta"
+local framework_version = "0.23.4-beta"
 
 local Mod = {}
 local kModName = ""
@@ -40,15 +40,13 @@ function Mod:Initialise()
 
   Script.Load("lua/" .. kModName .. "/Framework/ModuleLoader.lua")
 
-  local LoadFrameworkModule = GetFrameworkModuleLoader()
-  GetFrameworkModuleLoader = nil
+  local LoadFrameworkModule, GetFrameworkModuleLoader = GetFrameworkModuleLoader(), nil
 
   LoadFrameworkModule("Logging")
 
   Script.Load("lua/" .. kModName .. "/Config.lua")
 
-  config = assert(GetModConfig, "Initialise: Config.lua malformed. Missing GetModConfig function.")(self.Logger:GetLogLevels())
-  GetModConfig = nil
+  configt, GetModConfig = assert(GetModConfig, "Initialise: Config.lua malformed. Missing GetModConfig function.")(self.Logger:GetLogLevels()), nil
 
   assert(config, "Initialise: Config.lua malformed. GetModConfig doesn't return anything.")
   assert(type(config) == "table", "Initialise: Config.lua malformed. GetModConfig doesn't return expected type.")
@@ -70,6 +68,7 @@ function Mod:Initialise()
   end
 
   assert(GetVersionInformation, "Config.lua malformed. GetVersionInformation does not exist")(Mod.Versioning)
+  GetVersionInformation = nil
 
   Mod.Libraries:LoadAllLibraries(self.config.libraries)
 
