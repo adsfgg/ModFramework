@@ -10,9 +10,7 @@ end
 function Libraries:LoadLibrary(library)
     Script.Load(self:GetLibraryPath(library))
 
-    assert(GetLibraryObject, "Invalid library: " .. library)
-
-    libraryObjects[library] = GetLibraryObject()
+    libraryObjects[library] = assert(GetLibraryObject, "Invalid library: " .. library)()
     GetLibraryObject = nil
 end
 
