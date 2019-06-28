@@ -89,6 +89,14 @@ function Logger:PrintVersion(vm)
     self:PrintInfo(string.format("%s version: %s loaded", Mod:GetModName(), version), vm)
 end
 
+function Logger:SendChatMessage(msg)
+    local modName = Mod:GetModName()
+
+    Server.SendNetworkMessage("Chat", BuildChatMessage(false, modName, -1, kTeamReadyRoom, kNeutralTeamType, msg), true)
+    Shared.Message("Chat All - " .. modName .. ": " .. msg)
+    Server.AddChatToHistory(msg, modName, 0, kTeamReadyRoom, false)
+end
+
 function GetFrameworkModuleChanges()
     return "Logger", Logger
 end
