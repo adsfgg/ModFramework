@@ -1,9 +1,10 @@
 --[[
 	You can set the priority of your mod here.
+
 	Do not change anything other than line 6
 ]]
 
-local priority = 50
+local priority = 100
 
 --[[
 ==============================================
