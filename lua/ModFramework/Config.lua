@@ -20,19 +20,19 @@ function GetVersionInformation(Versioning)
 	Versioning:SetVersion(1, 2, 3, "rc1")
 end
 
-function Config:GetTechIdsToAdd()
+function Config.GetTechIdsToAdd()
 	return {
 
 	}
 end
 
-function Config:GetLibraries()
+function Config.GetLibraries()
 	return {
 
 	}
 end
 
-function Config:GetModules()
+function Config.GetModules()
 	return {
 
 	}
