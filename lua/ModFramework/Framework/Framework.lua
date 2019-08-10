@@ -46,7 +46,7 @@ function Mod:Initialise()
 
   Script.Load("lua/" .. kModName .. "/Config.lua")
 
-  configt, GetModConfig = assert(GetModConfig, "Initialise: Config.lua malformed. Missing GetModConfig function.")(self.Logger:GetLogLevels()), nil
+  config, GetModConfig = assert(GetModConfig, "Initialise: Config.lua malformed. Missing GetModConfig function.")(self.Logger:GetLogLevels()), nil
 
   assert(config, "Initialise: Config.lua malformed. GetModConfig doesn't return anything.")
   assert(type(config) == "table", "Initialise: Config.lua malformed. GetModConfig doesn't return expected type.")
