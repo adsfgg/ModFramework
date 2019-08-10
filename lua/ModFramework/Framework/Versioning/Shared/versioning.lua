@@ -4,7 +4,7 @@ local Versioning = {}
 local majorVersion = 0
 local minorVersion = 0
 local patchVersion = 0
-local preRelease
+local preRelease = ""
 
 local function ValidateVersion(version, name)
     assert(math.floor(version) == version, "Version type must be integer.")
@@ -12,9 +12,6 @@ local function ValidateVersion(version, name)
 end
 
 local function ValidatePreRelease(newPreRelease)
-    if newPreRelease == nil then
-        return-- we allow nil prereleases
-    end
     assert(type(newPreRelease) == "string", "PreRelease must be of type string")
     assert(newPreRelease ~= "", "PreRelease cannot be empty")
 end
@@ -51,6 +48,9 @@ function Versioning:GetPreRelease()
 end
 
 function Versioning:SetPreRelease(newPreRelease)
+    if newPreRelease == nil then
+        newPreRelease = ""
+    end
     ValidatePreRelease(newPreRelease)
     preRelease = newPreRelease
 end
