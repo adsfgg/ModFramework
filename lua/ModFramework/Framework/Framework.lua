@@ -40,7 +40,8 @@ function Mod:Initialise()
 
     Script.Load("lua/" .. kModName .. "/Framework/ModuleLoader.lua")
 
-    local LoadFrameworkModule, GetFrameworkModuleLoader = GetFrameworkModuleLoader(), nil
+    local LoadFrameworkModule = GetFrameworkModuleLoader()
+    GetFrameworkModuleLoader = nil
 
     LoadFrameworkModule("Logging")
 
@@ -55,6 +56,7 @@ function Mod:Initialise()
 
     valid, reason = RunFrameworkValidator(config)
     assert(valid, "Initialise: Config failed validation. " .. reason)
+    RunFrameworkValidator = nil
 
     for i, v in ipairs(config.modules) do
         config.modules[i] = "Modules/" .. v
