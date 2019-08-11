@@ -6,9 +6,9 @@ if not string.find(Script.CallStack(), "Main.lua") then
 
     local Mod = _G[kModName]
 
-    Mod.Logger:PrintDebug("Loading NewTech files", "all")
+    Mod.Logger:PrintDebug("Loading NewScript files", "all")
     for i = 1, #Mod:GetModules() do
-        local path = Mod:FormatDir(Mod:GetModules()[i], "NewTech")
+        local path = Mod:FormatDir(Mod:GetModules()[i], "NewScript")
 
         if Server then
             local hashPath = Mod:FormatDir(Mod.config.modules[i])
@@ -16,16 +16,16 @@ if not string.find(Script.CallStack(), "Main.lua") then
             Mod.Logger:PrintDebug("Hashing: " .. hashPath .. " Result: " .. (result and result or "nil"))
         end
 
-        local NewTechFiles = {}
-        Shared.GetMatchingFileNames(path, true, NewTechFiles)
+        local NewScriptFiles = {}
+        Shared.GetMatchingFileNames(path, true, NewScriptFiles)
 
-        for j = 1, #NewTechFiles do
-            Mod.Logger:PrintDebug("Loading new tech file: " .. NewTechFiles[j], "all")
-            Script.Load(NewTechFiles[j])
+        for j = 1, #NewScriptFiles do
+            Mod.Logger:PrintDebug("Loading new tech file: " .. NewScriptFiles[j], "all")
+            Script.Load(NewScriptFiles[j])
         end
     end
 
-    Mod.Logger:PrintDebug("NewTech files loaded.", "all")
+    Mod.Logger:PrintDebug("NewScript files loaded.", "all")
 
     Mod.Logger:PrintDebug("Loading Shared files", "all")
 
