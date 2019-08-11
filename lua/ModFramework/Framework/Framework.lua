@@ -69,8 +69,8 @@ function Mod:Initialise()
         LoadFrameworkModule(v)
     end
 
-    assert(GetVersionInformation, "Config.lua malformed. GetVersionInformation does not exist")(Mod.Versioning)
-    GetVersionInformation = nil
+    assert(SetVersionInformation, "Config.lua malformed. SetVersionInformation does not exist")(Mod.Versioning)
+    SetVersionInformation = nil
 
     Mod.Libraries:LoadAllLibraries(self.config.libraries)
 

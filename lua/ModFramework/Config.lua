@@ -16,7 +16,7 @@ function GetModConfig(kLogLevels)
     return config
 end
 
-function GetVersionInformation(Versioning)
+function SetVersionInformation(Versioning)
     Versioning:SetVersion(1, 2, 3, "rc1")
 end
 
