@@ -4,33 +4,13 @@ Place your modules here.
 Don't forget to add the module to Config.lua
 
 # Structure
-```
-ModuleName
-    |->Pre
-        |->File.lua
-    |->Post
-        |->File.lua
-    |->Replace
-        |->File.lua
-    |->Halt
-        |->File.lua
-    |->Client
-        |->Client.lua
-    |->Server
-        |->Server.lua
-    |->Predict
-        |->Predict.lua
-    |->Shared
-        |->Shared.lua
-```
-
-The above shows every possible VM/Hook that is possible within a module.
+The below shows every possible VM/Hook that is possible within a module.
 
 * NS2 ModLoader Hooks
     * Pre
-        * Loads the script *before* the vanilla file
+        * Loads the script **before** the vanilla file
     * Post
-        * Loads the script *after* the vanilla file
+        * Loads the script **after** the vanilla file
     * Replace
         * Replaces the vanilla file with the script
     * Halt 
@@ -44,3 +24,8 @@ The above shows every possible VM/Hook that is possible within a module.
         * Runs all scripts in this folder on the Predict VM
     * Shared
         * Runs all scripts in this folder on all VMs.
+* ModFramework 
+    * NewScripts
+        * Loads all scripts in this folder on all VMs **before** any `Shared` scripts are loaded.
+    * Scripts
+        * Directory to place scripts. To load them use ModFramework function (TBA)
