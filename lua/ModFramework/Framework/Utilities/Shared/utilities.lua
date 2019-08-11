@@ -8,7 +8,7 @@ function Utility:UpdateEnum(tbl, key, value)
     assert(key, "UpdateEnum: Required second argument \"key\" missing.")
     assert(value, "UpdateEnum: Required third argument \"value\" missing.")
 
-    assert(rawget(tbl,key), "UpdateEnum: key doesn't exist in table.")
+    assert(rawget(tbl, key), "UpdateEnum: key doesn't exist in table.")
 
     rawset(tbl, rawget(tbl, key), value)
     rawset(tbl, key, value)
@@ -20,7 +20,7 @@ function Utility:RemoveFromEnum(tbl, key)
 
     assert(tblType == "table", "RemoveFromEnum: First argument expected to be of type table, was " .. tblType)
     assert(key ~= nil, "RemoveFromEnum: Required second argument \"key\" missing.")
-    assert(rawget(tbl,key) ~= nil, "RemoveFromEnum: key doesn't exist in table.")
+    assert(rawget(tbl, key) ~= nil, "RemoveFromEnum: key doesn't exist in table.")
 
     rawset(tbl, rawget(tbl, key), nil)
     rawset(tbl, key, nil)
@@ -34,8 +34,8 @@ function Utility:RemoveFromEnum(tbl, key)
         rawset(tbl, maxVal, nil)
 
         -- move max down
-        rawset(tbl, 'Max', maxVal-1)
-        rawset(tbl, maxVal-1, 'Max')
+        rawset(tbl, 'Max', maxVal - 1)
+        rawset(tbl, maxVal - 1, 'Max')
     end
 end
 

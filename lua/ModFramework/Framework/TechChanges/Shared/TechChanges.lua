@@ -7,7 +7,7 @@ local Tech = {}
 local kTechIdToMaterialOffsetAdditions = {}
 
 function Tech:AddTechIdToMaterialOffset(techId, offset)
-    table.insert(kTechIdToMaterialOffsetAdditions, {techId, offset})
+    table.insert(kTechIdToMaterialOffsetAdditions, { techId, offset })
 end
 
 -- alien techmap
@@ -20,27 +20,27 @@ local kAlienTechmapLinesToAdd = {}
 local kAlienTechmapLinesToRemove = {}
 
 function Tech:ChangeAlienTechmapTech(techId, x, y)
-    table.insert(kAlienTechmapTechToChange, techId, { techId, x, y } )
+    table.insert(kAlienTechmapTechToChange, techId, { techId, x, y })
 end
 
 function Tech:AddAlienTechmapTech(techId, x, y)
-    table.insert(kAlienTechmapTechToAdd, techId, { techId, x, y } )
+    table.insert(kAlienTechmapTechToAdd, techId, { techId, x, y })
 end
 
 function Tech:DeleteAlienTechmapTech(techId)
-    table.insert(kAlienTechmapTechToRemove, techId, true )
+    table.insert(kAlienTechmapTechToRemove, techId, true)
 end
 
 function Tech:ChangeAlienTechmapLine(oldLine, newLine)
-    table.insert(kAlienTechmapLinesToChange, { oldLine, newLine } )
+    table.insert(kAlienTechmapLinesToChange, { oldLine, newLine })
 end
 
 function Tech:AddAlienTechmapLine(newLine)
-    table.insert(kAlienTechmapLinesToAdd, { newLine } )
+    table.insert(kAlienTechmapLinesToAdd, { newLine })
 end
 
 function Tech:DeleteAlienTechmapLine(line)
-    table.insert(kAlienTechmapLinesToRemove, line )
+    table.insert(kAlienTechmapLinesToRemove, line)
 end
 
 -- marine techmap
@@ -53,23 +53,23 @@ local kMarineTechmapLinesToAdd = {}
 local kMarineTechmapLinesToRemove = {}
 
 function Tech:ChangeMarineTechmapTech(techId, x, y)
-    table.insert(kMarineTechmapTechToChange, techId, { techId, x, y } )
+    table.insert(kMarineTechmapTechToChange, techId, { techId, x, y })
 end
 
 function Tech:AddMarineTechmapTech(techId, x, y)
-    table.insert(kMarineTechmapTechToAdd, techId, { techId, x, y } )
+    table.insert(kMarineTechmapTechToAdd, techId, { techId, x, y })
 end
 
 function Tech:DeleteMarineTechmapTech(techId)
-    table.insert(kMarineTechmapTechToRemove, techId, true )
+    table.insert(kMarineTechmapTechToRemove, techId, true)
 end
 
 function Tech:ChangeMarineTechmapLine(oldLine, newLine)
-    table.insert(kMarineTechmapLinesToChange, { oldLine, newLine } )
+    table.insert(kMarineTechmapLinesToChange, { oldLine, newLine })
 end
 
 function Tech:AddMarineTechmapLine(newLine)
-    table.insert(kMarineTechmapLinesToAdd, { 0, newLine } )
+    table.insert(kMarineTechmapLinesToAdd, { 0, newLine })
 end
 
 function Tech:AddMarineTechmapLineWithTech(tech1, tech2)
@@ -77,11 +77,11 @@ function Tech:AddMarineTechmapLineWithTech(tech1, tech2)
 end
 
 function Tech:DeleteMarineTechmapLine(line)
-    table.insert(kMarineTechmapLinesToRemove, { 0, line } )
+    table.insert(kMarineTechmapLinesToRemove, { 0, line })
 end
 
 function Tech:DeleteMarineTechmapLineWithTech(tech1, tech2)
-    table.insert(kMarineTechmapLinesToRemove, { 1, tech1, tech2 } )
+    table.insert(kMarineTechmapLinesToRemove, { 1, tech1, tech2 })
 end
 
 -- tech data changes
@@ -90,11 +90,11 @@ local kTechToChange = {}
 local kTechToAdd = {}
 
 function Tech:RemoveTech(techId)
-    table.insert(kTechToRemove, techId, true )
+    table.insert(kTechToRemove, techId, true)
 end
 
 function Tech:ChangeTech(techId, newTechData)
-    table.insert(kTechToChange, techId, newTechData )
+    table.insert(kTechToChange, techId, newTechData)
 end
 
 function Tech:AddTech(techData)
@@ -104,18 +104,18 @@ end
 -- upgrade nodes
 local kUpgradesToRemove = {}
 local kUpgradesToChange = {}
-local kUpgradesToAdd    = {}
+local kUpgradesToAdd = {}
 
 function Tech:RemoveUpgrade(techId)
     table.insert(kUpgradesToRemove, techId, true)
 end
 
 function Tech:ChangeUpgrade(techId, prereq1, prereq2)
-    table.insert(kUpgradesToChange, techId, { techId, prereq1, prereq2 } )
+    table.insert(kUpgradesToChange, techId, { techId, prereq1, prereq2 })
 end
 
 function Tech:AddUpgradeNode(techId, prereq1, prereq2, team)
-    table.insert(kUpgradesToAdd, {techId, prereq1, prereq2, team})
+    table.insert(kUpgradesToAdd, { techId, prereq1, prereq2, team })
 end
 
 -- research nodes
@@ -128,11 +128,11 @@ function Tech:RemoveResearch(techId)
 end
 
 function Tech:ChangeResearch(techId, prereq1, prereq2, addOnTechId)
-    table.insert(kResearchToChange, techId, { techId, prereq1, prereq2, addOnTechId } )
+    table.insert(kResearchToChange, techId, { techId, prereq1, prereq2, addOnTechId })
 end
 
 function Tech:AddResearchNode(techId, prereq1, prereq2, addOnTechId)
-    table.insert(kResearchToAdd, { techId, prereq1, prereq2, addOnTechId } )
+    table.insert(kResearchToAdd, { techId, prereq1, prereq2, addOnTechId })
 end
 
 -- targeted activation
@@ -144,7 +144,7 @@ function Tech:RemoveTargetedActivation(techId)
 end
 
 function Tech:ChangeTargetedActivation(techId, prereq1, prereq2)
-    table.insert(kTargetedActivationToChange, techId, { techId, prereq1, prereq2 } )
+    table.insert(kTargetedActivationToChange, techId, { techId, prereq1, prereq2 })
 end
 
 -- buy nodes
@@ -157,11 +157,11 @@ function Tech:RemoveBuyNode(techId)
 end
 
 function Tech:ChangeBuyNode(techId, prereq1, prereq2, addOnTechId)
-    table.insert(kBuyToChange, techId, { techId, prereq1, prereq2, addOnTechId } )
+    table.insert(kBuyToChange, techId, { techId, prereq1, prereq2, addOnTechId })
 end
 
 function Tech:AddBuyNode(techId, prereq1, prereq2, addOnTechId)
-    table.insert(kBuyToAdd, { techId, prereq1, prereq2, addOnTechId } )
+    table.insert(kBuyToAdd, { techId, prereq1, prereq2, addOnTechId })
 end
 
 -- build nodes
@@ -174,7 +174,7 @@ function Tech:RemoveBuildNode(techId)
 end
 
 function Tech:ChangeBuildNode(techId, prereq1, prereq2, isRequired)
-    table.insert(kBuildToChange, techId, { techId, prereq1, prereq2, isRequired } )
+    table.insert(kBuildToChange, techId, { techId, prereq1, prereq2, isRequired })
 end
 
 function Tech:AddBuildNode(techId, prereq1, prereq2, isRequired)
@@ -190,7 +190,7 @@ function Tech:RemovePassive(techId)
 end
 
 function Tech:ChangePassive(techId, prereq1, prereq2)
-    table.insert(kPassiveToChange, techId, { techId, prereq1, prereq2 } )
+    table.insert(kPassiveToChange, techId, { techId, prereq1, prereq2 })
 end
 
 -- special
@@ -202,7 +202,7 @@ function Tech:RemoveSpecial(techId)
 end
 
 function Tech:ChangeSpecial(techId, prereq1, prereq2, requiresTarget)
-    table.insert(kSpecialToChange, techId, { techId, prereq1, prereq2, requiresTarget } )
+    table.insert(kSpecialToChange, techId, { techId, prereq1, prereq2, requiresTarget })
 end
 
 -- manufacture node
@@ -214,7 +214,7 @@ function Tech:RemoveManufactureNode(techId)
 end
 
 function Tech:ChangeManufactureNode(techId, prereq1, prereq2, isRequired)
-    table.insert(kManufactureNodeToChange, techId, { techId, prereq1, prereq2, isRequired } )
+    table.insert(kManufactureNodeToChange, techId, { techId, prereq1, prereq2, isRequired })
 end
 
 -- orders
@@ -225,7 +225,7 @@ function Tech:RemoveOrder(techId)
 end
 
 -- activation
-local kActivationToRemove= {}
+local kActivationToRemove = {}
 local kActivationToChange = {}
 local kActivationToAdd = {}
 
@@ -234,11 +234,11 @@ function Tech:RemoveActivation(techId)
 end
 
 function Tech:ChangeActivation(techId, prereq1, prereq2)
-    table.insert(kActivationToChange, techId, { techId, prereq1, prereq2 } )
+    table.insert(kActivationToChange, techId, { techId, prereq1, prereq2 })
 end
 
 function Tech:AddActivation(techId, prereq1, prereq2)
-    table.insert(kActivationToAdd, { techId, prereq1, prereq2 } )
+    table.insert(kActivationToAdd, { techId, prereq1, prereq2 })
 end
 
 -- Targeted Buy Node
@@ -250,7 +250,7 @@ function Tech:RemoveTargetedBuy(techId)
 end
 
 function Tech:ChangeTargetedBuy(techId, prereq1, prereq2, addOnTechId)
-    table.insert(kTargetedBuyToChange, techId, { techId, prereq1, prereq2, addOnTechId } )
+    table.insert(kTargetedBuyToChange, techId, { techId, prereq1, prereq2, addOnTechId })
 end
 
 -- getters BOOOOO

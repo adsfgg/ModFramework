@@ -25,10 +25,10 @@ local function UpdateBindingData()
     local defaults = debug.getupvaluex(GetDefaultInputValue, "defaults")
     local bindingChanges = Bindings:GetBindingAdditions()
 
-    for _,v in ipairs(bindingChanges) do
+    for _, v in ipairs(bindingChanges) do
         local afterName = v[5]
 
-        Mod.Logger:PrintDebug("Adding new bind \"" .. v[1].. "\" after " .. afterName)
+        Mod.Logger:PrintDebug("Adding new bind \"" .. v[1] .. "\" after " .. afterName)
 
         v[3] = Locale.ResolveString(v[3])
 
@@ -44,15 +44,15 @@ local function UpdateBindingData()
 
         assert(index, "BindingChanges: Binding \"" .. afterName .. "\" does not exist.")
 
-        for i=0,3 do
+        for i = 0, 3 do
             table.insert(globalControlBindings, index + i, v[i + 1])
         end
 
         -- defaults
 
-        for i,def in pairs(defaults) do
+        for i, def in pairs(defaults) do
             if def[1] == afterName then
-                table.insert(defaults, i+1, {v[1], v[4]})
+                table.insert(defaults, i + 1, { v[1], v[4] })
                 break
             end
         end

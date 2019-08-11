@@ -15,14 +15,14 @@ local priority = 100
 local kModName = debug.getinfo(1, "S").source:gsub("@lua/entry/", ""):gsub("%.entry", "")
 
 local function GetPath(entry)
-	return "lua/" .. kModName .. "/Framework/ModEntry/" .. entry .. ".lua"
+    return "lua/" .. kModName .. "/Framework/ModEntry/" .. entry .. ".lua"
 end
 
 modEntry = {
-	Client = GetPath("Client"),
-	Server = GetPath("Server"),
-	Predict = GetPath("Predict"),
-	Shared = GetPath("Shared"),
-	FileHooks = GetPath("FileHooks"),
-	Priority = priority
+    Client = GetPath("Client"),
+    Server = GetPath("Server"),
+    Predict = GetPath("Predict"),
+    Shared = GetPath("Shared"),
+    FileHooks = GetPath("FileHooks"),
+    Priority = priority
 }

@@ -2,15 +2,17 @@ local Mod = GetMod()
 local sent = false
 
 local function CheckClientEntry()
-	if sent then return end
+    if sent then
+        return
+    end
 
-	local clientEntry = {}
+    local clientEntry = {}
 
-	Shared.GetMatchingFileNames("lua/entry/*", true, clientEntry)
+    Shared.GetMatchingFileNames("lua/entry/*", true, clientEntry)
 
-	Client.SendNetworkMessage(Mod:GetModName() .. "_EntryCheck", {count = #clientEntry}, true)
+    Client.SendNetworkMessage(Mod:GetModName() .. "_EntryCheck", { count = #clientEntry }, true)
 
-	sent = true
+    sent = true
 end
 
 -- using clientconnected makes the engine implode, so lets check every tick :D

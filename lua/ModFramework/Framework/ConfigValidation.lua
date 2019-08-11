@@ -1,16 +1,15 @@
 local Mod = GetMod()
 local configOptions = {
     {
-        var             = "kLogLevel",
-        expectedType    = "table",
-        required        = false,
-        default         = Mod.Logger:GetLogLevels().info,
-        displayDefault  = "info",
-        warn            = true,
-        validator       =
-        function(tbl)
+        var = "kLogLevel",
+        expectedType = "table",
+        required = false,
+        default = Mod.Logger:GetLogLevels().info,
+        displayDefault = "info",
+        warn = true,
+        validator = function(tbl)
             assert(tbl)
-            for _,v in pairs(Mod.Logger:GetLogLevels()) do
+            for _, v in pairs(Mod.Logger:GetLogLevels()) do
                 if v == tbl then
                     return true
                 end
@@ -20,52 +19,51 @@ local configOptions = {
     },
 
     {
-        var             = "kShowInFeedbackText",
-        expectedType    = "boolean",
-        required        = false,
-        default         = false,
-        displayDefault  = "false",
-        warn            = true
+        var = "kShowInFeedbackText",
+        expectedType = "boolean",
+        required = false,
+        default = false,
+        displayDefault = "false",
+        warn = true
     },
 
     {
-        var             = "kModVersion",
-        expectedType    = "string",
-        required        = false,
-        default         = "0",
-        displayDefault  = "0",
-        warn            = true
+        var = "kModVersion",
+        expectedType = "string",
+        required = false,
+        default = "0",
+        displayDefault = "0",
+        warn = true
     },
 
     {
-        var             = "kModBuild",
-        expectedType    = "string",
-        required        = false,
-        default         = "1",
-        displayDefault  = "1",
-        warn            = true
+        var = "kModBuild",
+        expectedType = "string",
+        required = false,
+        default = "1",
+        displayDefault = "1",
+        warn = true
     },
 
     {
-        var             = "disableRanking",
-        expectedType    = "boolean",
-        required        = false,
-        default         = false,
-        displayDefault  = "false",
-        warn            = true
+        var = "disableRanking",
+        expectedType = "boolean",
+        required = false,
+        default = false,
+        displayDefault = "false",
+        warn = true
     },
 
     {
-        var             = "modules",
-        expectedType    = "table",
-        required        = true,
-        default         = {},
-        displayDefault  = "new table",
-        warn            = true,
-        validator       =
-        function(tbl)
+        var = "modules",
+        expectedType = "table",
+        required = true,
+        default = {},
+        displayDefault = "new table",
+        warn = true,
+        validator = function(tbl)
             assert(tbl)
-            for _,v in ipairs(tbl) do
+            for _, v in ipairs(tbl) do
                 if type(v) ~= "string" then
                     return false
                 end
@@ -75,14 +73,13 @@ local configOptions = {
     },
 
     {
-        var             = "use_config",
-        expectedType    = "string",
-        required        = false,
-        default         = "none",
-        displayDefault  = "none",
-        warn            = true,
-        validator       =
-        function(str)
+        var = "use_config",
+        expectedType = "string",
+        required = false,
+        default = "none",
+        displayDefault = "none",
+        warn = true,
+        validator = function(str)
             assert(str)
             local v = str:lower()
             local validOptions = {
@@ -97,16 +94,15 @@ local configOptions = {
     },
 
     {
-        var             = "techIdsToAdd",
-        expectedType    = "table",
-        required        = false,
-        default         = {},
-        displayDefault  = "new table",
-        warn            = false,
-        validator       =
-        function(tbl)
+        var = "techIdsToAdd",
+        expectedType = "table",
+        required = false,
+        default = {},
+        displayDefault = "new table",
+        warn = false,
+        validator = function(tbl)
             assert(tbl)
-            for _,v in ipairs(tbl) do
+            for _, v in ipairs(tbl) do
                 if type(v) ~= "string" then
                     return false
                 end
@@ -116,16 +112,15 @@ local configOptions = {
     },
 
     {
-        var             = "libraries",
-        expectedType    = "table",
-        required        = false,
-        default         = {},
-        displayDefault  = "new table",
-        warn            = false,
-        validator       =
-        function(tbl)
+        var = "libraries",
+        expectedType = "table",
+        required = false,
+        default = {},
+        displayDefault = "new table",
+        warn = false,
+        validator = function(tbl)
             assert(tbl)
-            for _,v in ipairs(tbl) do
+            for _, v in ipairs(tbl) do
                 if type(v) ~= "string" then
                     return false
                 end
@@ -168,7 +163,7 @@ local function ValidateConfig(config)
         return false, "Too many config options set"
     end
 
-    for _,v in ipairs(configOptions) do
+    for _, v in ipairs(configOptions) do
         if config[v.var] ~= nil then
             local valid, reason = ValidateConfigOption(config[v.var], v)
 

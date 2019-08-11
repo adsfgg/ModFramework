@@ -2,11 +2,11 @@ local Mod = GetMod()
 local Logger = {}
 
 local kLogLevels = {
-    fatal = {display="Fatal", level=0},
-    error = {display="Error", level=1},
-    warn  = {display="Warn",  level=2},
-    info  = {display="Info",  level=3},
-    debug = {display="Debug", level=4},
+    fatal = { display = "Fatal", level = 0 },
+    error = { display = "Error", level = 1 },
+    warn = { display = "Warn", level = 2 },
+    info = { display = "Info", level = 3 },
+    debug = { display = "Debug", level = 4 },
 }
 
 function Logger:GetLogLevels()

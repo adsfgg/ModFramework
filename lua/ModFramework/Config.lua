@@ -1,39 +1,39 @@
 local Config = {}
 
 function GetModConfig(kLogLevels)
-	local config = {}
+    local config = {}
 
-	config.kLogLevel = kLogLevels.debug
-	config.kShowInFeedbackText = false
-	config.disableRanking = false
-	config.use_config = "none"
-	config.techIdsToAdd = Config.GetTechIdsToAdd()
+    config.kLogLevel = kLogLevels.debug
+    config.kShowInFeedbackText = false
+    config.disableRanking = false
+    config.use_config = "none"
+    config.techIdsToAdd = Config.GetTechIdsToAdd()
 
-	config.libraries = Config.GetLibraries()
+    config.libraries = Config.GetLibraries()
 
-	config.modules = Config.GetModules()
+    config.modules = Config.GetModules()
 
-	return config
+    return config
 end
 
 function GetVersionInformation(Versioning)
-	Versioning:SetVersion(1, 2, 3, "rc1")
+    Versioning:SetVersion(1, 2, 3, "rc1")
 end
 
 function Config.GetTechIdsToAdd()
-	return {
+    return {
 
-	}
+    }
 end
 
 function Config.GetLibraries()
-	return {
+    return {
 
-	}
+    }
 end
 
 function Config.GetModules()
-	return {
+    return {
 
-	}
+    }
 end

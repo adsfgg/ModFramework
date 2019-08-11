@@ -86,11 +86,12 @@ local function LoadFrameworkModule(module)
 
     -- logging might not have been setup at this point
     if Mod.Logger ~= nil then
-        p = function(str) Mod.Logger:PrintDebug(str) end
+        p = function(str)
+            Mod.Logger:PrintDebug(str)
+        end
     else
         local vm = Client and "Client" or Server and "Server" or Predict and "Predict" or "None"
-        p =
-        function(str)
+        p = function(str)
             --print(string.format("[%s - %s] %s", kModName, vm, str))
         end
     end
