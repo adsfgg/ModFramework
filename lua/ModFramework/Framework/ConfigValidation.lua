@@ -28,24 +28,6 @@ local configOptions = {
     },
 
     {
-        var = "kModVersion",
-        expectedType = "string",
-        required = false,
-        default = "0",
-        displayDefault = "0",
-        warn = true
-    },
-
-    {
-        var = "kModBuild",
-        expectedType = "string",
-        required = false,
-        default = "1",
-        displayDefault = "1",
-        warn = true
-    },
-
-    {
         var = "disableRanking",
         expectedType = "boolean",
         required = false,
