@@ -1,3 +1,4 @@
+local Mod = GetMod()
 local Utility = {}
 
 -- Update value in enum
@@ -37,6 +38,54 @@ function Utility:RemoveFromEnum(tbl, key)
         rawset(tbl, 'Max', maxVal - 1)
         rawset(tbl, maxVal - 1, 'Max')
     end
+end
+
+function Utility:SendChatMessage(msg)
+    local modName = Mod:GetModName()
+
+    Server.SendNetworkMessage("Chat", BuildChatMessage(false, modName, -1, kTeamReadyRoom, kNeutralTeamType, msg), true)
+    Shared.Message("Chat All - " .. modName .. ": " .. msg)
+    Server.AddChatToHistory(msg, modName, 0, kTeamReadyRoom, false)
+end
+
+function Utility:CreateConsoleCommand(cmd, callback)
+    assert(cmd, "Missing cmd argument.")
+    assert(type(cmd) == "string", "Argument cmd not of correct type")
+
+    assert(callback, "Missing callback argument")
+    assert(type(callback) == "function", "Argument callback not of correct type.")
+
+    local event = string.format("Console_%s_%s", Mod:GetModName():lower(), cmd)
+    print(event)
+    print(event)
+    print(event)
+    print(event)
+    print(event)
+    print(event)
+    print(event)
+    print(event)
+    print(event)
+    print(event)
+    print(event)
+    print(event)
+    print(event)
+    print(event)
+    print(event)
+    print(event)
+    print(event)
+    print(event)
+    print(event)
+    print(event)
+    print(event)
+    print(event)
+    print(event)
+    print(event)
+    print(event)
+    print(event)
+    print(event)
+    print(event)
+
+    Event.Hook(event, callback)
 end
 
 function GetFrameworkModuleChanges()

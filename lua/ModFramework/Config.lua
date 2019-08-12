@@ -6,7 +6,7 @@ function GetModConfig(kLogLevels)
     config.kLogLevel = kLogLevels.debug
     config.kShowInFeedbackText = false
     config.disableRanking = false
-    config.use_config = "none"
+    config.use_config = "client"
     config.techIdsToAdd = Config.GetTechIdsToAdd()
 
     config.libraries = Config.GetLibraries()
@@ -34,6 +34,6 @@ end
 
 function Config.GetModules()
     return {
-
+        "TestModule"
     }
 end

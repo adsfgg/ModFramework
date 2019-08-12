@@ -68,7 +68,7 @@ local configOptions = {
                 "none",
                 "client",
                 "server",
-                "both"
+                "all"
             }
 
             return table.contains(validOptions, v)

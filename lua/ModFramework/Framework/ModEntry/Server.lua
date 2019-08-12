@@ -22,4 +22,10 @@ if not string.find(Script.CallStack(), "Main.lua") then
     end
 
     Mod.Logger:PrintVersion("Server")
+
+    if not Predict and (Mod:GetConfig().use_config == "server" or Mod:GetConfig().use_config == "all") then
+        WriteDefaultConfigFile(Mod.ModConfig:GetConfigFileName(), Mod.ModConfig:GetDefaultConfigOptions())
+
+        Mod.ModConfig:LoadConfig()
+    end
 end
