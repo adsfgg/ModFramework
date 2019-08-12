@@ -92,7 +92,7 @@ local function LoadFrameworkModule(module)
     else
         local vm = Client and "Client" or Server and "Server" or Predict and "Predict" or "None"
         p = function(str)
-            --print(string.format("[%s - %s] %s", kModName, vm, str))
+            print(string.format("[%s - %s] %s", kModName, vm, str))
         end
     end
 

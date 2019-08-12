@@ -9,7 +9,6 @@ local frameworkModules = {
     "LibraryLoader",
     "Bindings",
     "ModConfig",
-    "ConsistencyCheck",
     "ResourceSystem",
     "TechChanges",
 }
@@ -72,6 +71,10 @@ function Mod:Initialise()
 
     assert(SetVersionInformation, "Config.lua malformed. SetVersionInformation does not exist")(Mod.Versioning)
     SetVersionInformation = nil
+
+    if self.config.use_consistency_check then
+        LoadFrameworkModule("ConsistencyCheck")
+    end
 
     Mod.Libraries:LoadAllLibraries(self.config.libraries)
 

@@ -109,6 +109,15 @@ local configOptions = {
             end
             return true
         end
+    },
+
+    {
+        var             = "use_consistency_check",
+        expectedType    = "boolean",
+        required        = false,
+        default         = true,
+        displayDefault  = "true",
+        warn            = true,
     }
 }
 
@@ -132,13 +141,14 @@ local function LoadDefaults(config, v)
     config[v.var] = option
 
     if v.warn then
-        Shared.Message(string.format("Using default value for option \"%s\" (%s)", v.var, v.displayDefault))
+        return { v.var, v.displayDefault }
     end
 end
 
 local function ValidateConfig(config)
     local configLength = table.real_length(config)
     local configOptionsLength = #configOptions
+    local warnings_to_be_issued = {}
 
     -- is this really needed?
     if configLength > configOptionsLength then
@@ -157,11 +167,14 @@ local function ValidateConfig(config)
                 return false, "Missing required config option \"" .. v.var .. "\""
             end
 
-            LoadDefaults(config, v)
+            local warned = LoadDefaults(config, v)
+            if warned then
+                table.insert(warnings_to_be_issued, warned)
+            end
         end
     end
 
-    return true, "passed"
+    return true, "passed", warnings_to_be_issued
 end
 
 function RunFrameworkValidator(config)
