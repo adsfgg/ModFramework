@@ -34,6 +34,6 @@ end
 
 function Config.GetModules()
     return {
-        "TestModule"
+
     }
 end
