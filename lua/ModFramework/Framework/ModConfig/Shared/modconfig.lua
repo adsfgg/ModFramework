@@ -37,7 +37,7 @@ end
 function ModConfig:RegisterConfigOption(name, value)
     CheckVM()
     assert(not loaded, "Cannot register a new config option after the config has loaded.")
-    assert(not configOptions[name], string.format("RegisterConfigOption: %q is already registered", name))
+    assert(not defaultConfigOptions[name], string.format("RegisterConfigOption: %q is already registered", name))
     defaultConfigOptions[name] = value
 end
 
@@ -49,14 +49,14 @@ end
 function ModConfig:GetConfigOption(name)
     CheckVM()
     assert(loaded, "Cannot get a config option before the current options are loaded.")
-    assert(configOptions[name], string.format("GetConfigOption: No config option with the name %q is registered", name))
+    assert(defaultConfigOptions[name], string.format("GetConfigOption: No config option with the name %q is registered", name))
     return configOptions[name]
 end
 
 function ModConfig:UpdateConfigOption(name, value)
     CheckVM()
     assert(loaded, "Cannot update a config option before the current options are loaded.")
-    assert(configOptions[name], string.format("UpdateConfigOption: No config option with the name %q is registered", name))
+    assert(defaultConfigOptions[name], string.format("UpdateConfigOption: No config option with the name %q is registered", name))
     configOptions[name] = value
     self:SaveConfigOptions()
 end
