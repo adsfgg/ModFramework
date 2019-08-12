@@ -6,4 +6,3 @@ local function test(a)
 end
 
 ModFramework.Utilities:CreateConsoleCommand("test", test)
-Event.Hook("Console_compmod_test", test)
