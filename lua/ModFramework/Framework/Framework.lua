@@ -3,6 +3,7 @@ local framework_version = "0.23.4-beta"
 local Mod = {}
 local kModName = ""
 local frameworkModules = {
+    "ScriptLoader",
     "Versioning",
     "Utilities",
     "LibraryLoader",
