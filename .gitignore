@@ -1,4 +1,6 @@
 *.DS_STORE
-.idea/*
+.idea
+.vscode
 *.xml
 stale_outputs_checked
+build

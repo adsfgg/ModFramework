@@ -1,0 +1,71 @@
+#!/bin/bash
+
+die() {
+    echo "Error: $1"
+    exit 1
+}
+
+usage() {
+    echo "Usage: setup"
+    echo ""
+    echo "./setup prjName"
+    echo ""
+    echo "Installs ModFramework"
+    exit 2
+}
+
+onError() {
+    die "Unexpected error occurred"
+}
+
+trap onError ERR
+
+[[ $# -ne 1 ]] && usage
+
+prjName="$1"
+shift
+
+[[ $prjName =~ " " ]] && die "Project name cannot contain spaces"
+[[ $prjName == "" ]] && die "Project name cannot be blank"
+
+rm -rf build
+
+echo "Creating project \"$prjName\""
+mkdir -p build/docugen
+mkdir -p build/docs
+mkdir -p build/src/lua/entry
+mkdir -p build/src/lua/$prjName/ModFramework
+
+touch build/docs/full_changelog.md
+touch build/docs/changes.md
+
+echo "Moving files..."
+cp -R src/lua/ModFramework build/src/lua/$prjName/
+cp src/lua/Config.lua build/src/lua/$prjName/
+cp src/lua/Modules.lua build/src/lua/$prjName/
+cp src/lua/entry/ModFramework.entry build/src/lua/entry/$prjName.entry
+
+cp src/docugen.py build/docugen.py
+cp src/make.sh build/make.sh
+
+cp LICENSE build/src/lua/$prjName/ModFramework/
+cp README.md build/src/lua/$prjName/ModFramework/
+
+cat <<EOL >> build/.gitignore
+build
+EOL
+
+echo "Creating mod structure..."
+mkdir build/src/lua/$prjName/Modules
+
+echo "Installing example module..."
+mkdir -p build/src/lua/$prjName/Modules/Example/Client
+cat << EOL >> build/src/lua/$prjName/Modules/Example/Client/client.lua
+local logger = $prjName:GetModule('logger')
+logger:PrintInfo("Hello, world!")
+EOL
+
+echo "Build complete"
+echo ""
+echo "Copy everything inside build/ to your project."
+echo "Happy modding!"
