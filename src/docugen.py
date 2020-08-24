@@ -11,13 +11,14 @@ initialNodeOrder = [
     "Fixes & Improvements"
 ]
 imagesForNodes = {
-    "Alien":                "https://wiki.naturalselection2.com/images/e/e5/All_Lifeforms_Banner.png",
+    "Alien":                "https://wiki.naturalselection2.com/images/9/9d/Movement_Banner.png",
     "Marine":               "https://wiki.naturalselection2.com/images/3/30/Marine_banner.png",
-    "Spectator":            "https://wiki.naturalselection2.com/images/0/0a/Marine_Structures_Banner.png",
+    "Spectator":            "https://wiki.naturalselection2.com/images/d/d1/Alien_Structures_Banner.png",
     "Global":               "https://wiki.naturalselection2.com/images/3/35/Resource_Model_Banner.png",
     "Fixes & Improvements": "https://wiki.naturalselection2.com/images/1/17/Tutorial_Banner.png"
 }
 enableImageOutput = True
+enableDebugOutput = False
 
 vsVanillaOutput = "docs/changes.md"
 modChangelogOutput = "docs/full_changelog.md"
@@ -30,12 +31,16 @@ def die(errStr):
 # NoReturn
 def usage():
     print("Docugen Usage")
-    print("docugen vanillaVersion, modVersion, [oldModVersion]")
+    print("docugen [--regen] vanillaVersion, modVersion, [oldModVersion]")
     print("")
     print("--create                   Create tables and exit")
     print("--update-only modVersion   Only update table, don't write changelogs")
-    print("--raw-dump                 Dump all data from table")
+    print("--raw-dump [modVersion]    Dump all data from table")
     exit(2)
+
+def debugPrint(str):
+    if enableDebugOutput:
+        print(str)
 
 class ChangeLogNode:
     def __init__(self, key, parent=None):
@@ -103,6 +108,8 @@ def main():
     c = conn.cursor()
 
     # Handle special cases
+    wantRegen = False
+
     if sys.argv[0] == "--create" and argc == 1:
         createTables(c)
         return
@@ -115,8 +122,13 @@ def main():
         if argc == 1:
             print(c.execute("SELECT * FROM FullChangelog").fetchall())
         elif argc == 2:
-            print(c.execute("SELECT * FROM FullChangelog WHERE modVersion = ?", sys.argv[1]).fetchall())
+            print(c.execute("SELECT * FROM FullChangelog WHERE modVersion = ?", [sys.argv[1]]).fetchall())
         return
+
+    if sys.argv[0] == "--regen":
+        wantRegen = True
+        sys.argv.pop(0)
+        argc -= 1
 
     # Populate argument vars
     if argc == 2:
@@ -138,14 +150,21 @@ def main():
     print("Mod Version: {}".format(modVersion))
     print("Old Mod Version: {}".format(oldModVersion))
 
+    # Only generate full changelog if --regen supplied
+    # Don't generate parial and don't update db
+    if wantRegen:
+        print("Regenerating changelog")
+        createChangelogAgainstVanilla(conn, c, vanillaVersion, modVersion, modName)
+        return
+
     # Populate database for new version
     scanForDocugenFiles(conn, c, modVersion)
 
     # Generate full changelog
-    createFullChangelog(conn, c, vanillaVersion, modVersion, modName)
+    createChangelogAgainstVanilla(conn, c, vanillaVersion, modVersion, modName)
 
     # Generate partial changelog
-    createPartialChangelog(conn, c, modVersion, oldModVersion, modName)
+    createChangelogStub(conn, c, modVersion, oldModVersion, modName)
     
 def createTables(c):
     # First drop
@@ -196,7 +215,7 @@ def scanForDocugenFiles(conn, c, modVersion):
         file = path + os.sep + ".docugen"
         with open(file, "r") as f:
             addDocugenEntry(c, modVersion, f.readlines())
-        # print("Processed module: {}".format(file))
+        debugPrint("Processed module: {}".format(file))
 
     # Commit table changes
     conn.commit()
@@ -206,7 +225,7 @@ def addDocugenEntry(c, modVersion, data):
     for value in data:
         c.execute("INSERT INTO FullChangelog(modVersion, key, value) VALUES (?,?,?)", [modVersion, key, value.strip()])
 
-def createFullChangelog(conn, c, vanillaVersion, modVersion, modName):
+def createChangelogAgainstVanilla(conn, c, vanillaVersion, modVersion, modName):
     # Get changelog for version
     rawChangelog = c.execute('''SELECT key,value 
                                 FROM FullChangelog 
@@ -225,7 +244,7 @@ def createFullChangelog(conn, c, vanillaVersion, modVersion, modName):
 
     print("Changelog against vanilla generated")
 
-def createPartialChangelog(conn, c, modVersion, oldModVersion, modName):
+def createChangelogStub(conn, c, modVersion, oldModVersion, modName):
     # Create entry stub
     stub = "# {} {} - ({})\n".format(modName, modVersion, date.today().strftime("%d/%m/%Y"))
 
@@ -241,8 +260,17 @@ def createPartialChangelog(conn, c, modVersion, oldModVersion, modName):
                                 WHERE modVersion = ? 
                                 ORDER BY key ASC''', [oldModVersion]).fetchall()
 
+    debugPrint("==OLD==")
+    debugPrint(oldChangelog)
+
+    debugPrint("\n==NEW==")
+    debugPrint(currentChangelog)
+
     # Diff both changelogs
     diff = changelogDiff(currentChangelog, oldChangelog)
+
+    debugPrint("\n==DIFF==")
+    debugPrint(diff)
 
     # Create tree from diff
     tree = ChangeLogTree(diff)
@@ -257,27 +285,29 @@ def createPartialChangelog(conn, c, modVersion, oldModVersion, modName):
         f.write("\n<br/>\n\n")
         f.write(content)
 
-    print("Mod changelog generated")
+    print("Mod changelog stub generated")
 
 def generateMarkdown(f, rootNode):
+    lineNo = 0
     for initialNode in initialNodeOrder:
         imageUrl = None
         if enableImageOutput:
             imageUrl = imagesForNodes[initialNode]
 
         if rootNode.hasChild(initialNode):
-            renderMarkdown(rootNode.getChild(initialNode), f, imageUrl=imageUrl)
+            lineNo = renderMarkdown(rootNode.getChild(initialNode), f, imageUrl=imageUrl, lineNo=lineNo)
 
     for child in rootNode.children:
         if child.key in initialNodeOrder:
             continue
     
-        renderMarkdown(child, f)
+        lineNo = renderMarkdown(child, f, lineNo=lineNo)
 
 def generatePartialMarkdown(f, rootNode):
+    lineNo = 0
     for initialNode in initialNodeOrder:
-        if rootNode.hasChild(initialNode):
-            renderMarkdown(rootNode.getChild(initialNode), f, additionalHeaderLevel=1)
+        if rootNode.hasChild(initialNode):            
+            lineNo = renderMarkdown(rootNode.getChild(initialNode), f, additionalHeaderLevel=1, lineNo=lineNo)
 
 def renderMarkdown(root, f, indentIndex=0, lineNo=0, imageUrl=None, additionalHeaderLevel=0):
     key = root.key
@@ -290,13 +320,15 @@ def renderMarkdown(root, f, indentIndex=0, lineNo=0, imageUrl=None, additionalHe
 
         f.write("#"*additionalHeaderLevel + "# {}\n".format(key))
     elif indentIndex == 1:
+        if lineNo != 0:
+            f.write("\n")
+
         f.write("#"*additionalHeaderLevel + "## {}\n".format(key))
     elif indentIndex == 2 and additionalHeaderLevel == 0: 
         # This is only really useful with no additionalHeaderLevels
         f.write("* ### {}\n".format(key))
     else:
-        spaces = "  "*(indentIndex - 2)
-        f.write("{}* {}\n".format(spaces, key))
+        f.write(("  "*(indentIndex-2)) + "* {}\n".format(key))
     
     # Increment lineNo and indentIndex
     lineNo += 1
@@ -329,11 +361,13 @@ def renderMarkdown(root, f, indentIndex=0, lineNo=0, imageUrl=None, additionalHe
         indentIndex = origIndentIndex
 
     # Increment lineNo by the number of values written
-    lineNo = lineNo + len(values)
+    lineNo += len(values)
 
     # Call renderMarkdown recursively for every child node
     for child in root.children:
-        renderMarkdown(child, f, indentIndex, lineNo, additionalHeaderLevel=additionalHeaderLevel)
+        lineNo = renderMarkdown(child, f, indentIndex=indentIndex, lineNo=lineNo, additionalHeaderLevel=additionalHeaderLevel)
+    
+    return lineNo
 
 def changelogDiff(curr, old):
     diff = []
@@ -354,30 +388,41 @@ def changelogDiff(curr, old):
     
         # If we didn't find a match for the key in old it means the key/value was added
         if not foundKey:
-            # print("Diff: Adding {} because the key wasn't found".format(key))
+            debugPrint("Diff: Adding {} because the key wasn't found".format(key))
             diff.append((key, value))
             continue
 
         # If we did find a key but didn't find a value, it means that a key/value pair was modified.
         if not foundValue:
-            # print("Diff: Adding {} because values didn't match".format(key))
+            debugPrint("Diff: Adding {} because values didn't match".format(key))
             diff.append((key, value))
             continue
 
     # Check for any deletions
     for key,value in old:
         foundKey = False
+        foundValue = False
 
         # Find matching key in curr
         for key2,value2 in curr:
             if key == key2:
                 foundKey = True
+                if value2 == value:
+                    foundValue = True
+            elif foundKey:
                 break
         
         # If a key exists in the old changelog but not in the current one, it's been removed
         if not foundKey:
-            # print("Diff: Adding {} because it was deleted didn't match".format(key))
+            debugPrint("Diff: Adding {} because it was deleted (key missing)".format(key))
             diff.append((key, "== REMOVED == " + value))
+            continue
+
+        # If we did find a key in the old changelog but didn't find the value in the new changelog it's been removed
+        if not foundValue:
+            debugPrint("Diff: Adding {} because it was deleted (key found, value missing)".format(key))
+            diff.append((key, "== REMOVED == " + value))
+            continue
     
     return diff
 

@@ -4,6 +4,9 @@ class 'TechHandlerModule' (FrameworkModule)
 
 function TechHandlerModule:Initialize(framework)
     FrameworkModule.Initialize(self, "techhandler", framework, true)
+
+    -- Used for removing specific techdata entry
+    self.Remove = "modFrameworkRemoveTechData"
     
     -- Initialize arrays
     self:CreateArrays("materialOffset",        false)

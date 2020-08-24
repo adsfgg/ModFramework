@@ -38,6 +38,7 @@ mkdir -p build/src/lua/$prjName/ModFramework
 
 touch build/docs/full_changelog.md
 touch build/docs/changes.md
+touch build/docugen/data.db
 
 echo "Moving files..."
 cp -R src/lua/ModFramework build/src/lua/$prjName/

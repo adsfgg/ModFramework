@@ -18,8 +18,13 @@ local function TechDataChanges(techData)
             logger:PrintDebug("Changing tech: %s", record[kTechDataDisplayName])
 
             for index, value in pairs(techToChange[techDataId][2]) do
-                logger:PrintDebug("Changing [%s] = %s", index, value)
-                techData[techIndex][index] = value
+                if value == techHandler.Remove then
+                    logger:PrintDebug("Removing [%s]", index)
+                    techData[techIndex][index] = nil
+                else
+                    logger:PrintDebug("Changing [%s] = %s", index, value)
+                    techData[techIndex][index] = value
+                end
             end
         end
     end
