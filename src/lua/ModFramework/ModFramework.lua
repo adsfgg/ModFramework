@@ -10,8 +10,11 @@ Script.Load("lua/%__MODNAME__%/ModFramework/Modules/TechHandlerModule.lua")
 
 class 'ModFramework'
 
+local modFrameworkVersion = "1.0.0"
+
 function ModFramework:Initialize(vm, filehook)
     self.modName = "%__MODNAME__%"
+    fw_print_info(nil, "Initializing %s Framework Version %s", self.modName, modFrameworkVersion)
 
     -- Validate params
     fw_assert_not_nil(vm, "No VM passed")
