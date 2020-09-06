@@ -25,8 +25,8 @@ trap onError ERR
 prjName="$1"
 shift
 
-[[ $prjName =~ " " ]] && die "Project name cannot contain spaces"
 [[ $prjName == "" ]] && die "Project name cannot be blank"
+[[ $prjName =~ " " ]] && die "Project name cannot contain spaces"
 
 rm -rf build
 
@@ -52,7 +52,7 @@ cp src/make.sh build/make.sh
 cp LICENSE build/src/lua/$prjName/ModFramework/
 cp README.md build/src/lua/$prjName/ModFramework/
 
-cat <<EOL >> build/.gitignore
+cat <<EOL >> .gitignore
 build
 EOL
 
