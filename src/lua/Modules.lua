@@ -4,9 +4,9 @@
     For more information see the wiki.
 ]]
 
-function ModuleManagerModule:GetModules()
+function GetModFrameworkModules%__MODNAME__%()
     return {
         -- Example module
-        "Example"   
+        "Example"
     }
 end
