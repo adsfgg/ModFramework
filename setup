@@ -52,7 +52,7 @@ cp src/make.sh build/make.sh
 cp LICENSE build/src/lua/$prjName/ModFramework/
 cp README.md build/src/lua/$prjName/ModFramework/
 
-cat <<EOL >> .gitignore
+cat <<EOL >> build/.gitignore
 build
 EOL
 
