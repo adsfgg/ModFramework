@@ -1,4 +1,4 @@
-local mod = fw_get_current_mod()
+local mod = %__MODNAME__%
 
 if mod:GetModule('versioning'):GetShouldDisplay() then
     local originalFeedbackInit

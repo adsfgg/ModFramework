@@ -1,6 +1,6 @@
 if not Client then return end
 
-local mod = fw_get_current_mod()
+local mod = %__MODNAME__%
 mod:LoadAllModuleFiles("Client")
 local moduleManager = mod:GetModule('modulemanager')
 moduleManager:ValidateModules()

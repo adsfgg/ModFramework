@@ -3,25 +3,11 @@
     Other than that do not modify this file
 ]]
 
-local priority = 50
-
---[[
-==============================================
-    DO NOT CHANGE ANYTHING BELOW THIS LINE
-==============================================
-]]
-
-local modName = debug.getinfo(1, "S").source:gsub("@lua/entry/",""):gsub("%.entry","")
-
-local function GetPath(entry)
-    return "lua/" .. modName .. "/ModFramework/Entry/" .. entry .. ".lua"
-end
-
 modEntry = {
-    Client      = GetPath("Client"),
-    Server      = GetPath("Server"),
-    Predict     = GetPath("Predict"),
-    Shared      = GetPath("Shared"),
-    FileHooks   = GetPath("FileHooks"),
-    Priority    = priority
+    Client      = "lua/%__MODNAME__%/ModFramework/Entry/Client.lua",
+    Server      = "lua/%__MODNAME__%/ModFramework/Entry/Server.lua",
+    Predict     = "lua/%__MODNAME__%/ModFramework/Entry/Predict.lua",
+    Shared      = "lua/%__MODNAME__%/ModFramework/Entry/Shared.lua",
+    FileHooks   = "lua/%__MODNAME__%/ModFramework/Entry/FileHooks.lua",
+    Priority    = 50
 }

@@ -1,12 +1,7 @@
 class 'ModFramework'
 
-function ModFramework:Initialize(modname, vm, filehook)
-    -- Use basic asserts for the modname as this is required before we can load the Util script.
-    assert(modname, "ModFramework: No modname passed")
-    assert(type(modname) == "string", "ModFramework: Modname not a string")
-
-    -- Modname validated so move to attribute
-    self.modName = modname
+function ModFramework:Initialize(vm, filehook)
+    self.modName = "%__MODNAME__%"
 
     -- Load required scripts
     self:LoadScript("ModFramework/Utils.lua")

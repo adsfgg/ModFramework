@@ -56,6 +56,10 @@ cat <<EOL >> build/.gitignore
 build
 EOL
 
+echo "Renaming target variables"
+# Replace %__MODNAME__%
+find build/src/lua/. -type f -iname "*" -exec sed -i "s/%__MODNAME__%/$prjName/g" {} \;
+
 echo "Creating mod structure..."
 mkdir build/src/lua/$prjName/Modules
 
