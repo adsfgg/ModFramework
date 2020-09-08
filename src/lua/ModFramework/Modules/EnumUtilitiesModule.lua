@@ -1,4 +1,4 @@
-Script.Load("lua/BalanceMod/ModFramework/Modules/FrameworkModule.lua")
+Script.Load("lua/%__MODNAME__%/ModFramework/Modules/FrameworkModule.lua")
 
 class 'EnumUtilitiesModule' (FrameworkModule)
 

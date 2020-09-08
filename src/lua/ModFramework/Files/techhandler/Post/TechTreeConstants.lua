@@ -1,4 +1,4 @@
-local mod = BalanceMod
+local mod = %__MODNAME__%
 local techHandler = mod:GetModule('techhandler')
 local enumUtils = mod:GetModule('enumutilities')
 local logger = mod:GetModule('logger')
