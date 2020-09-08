@@ -5,10 +5,19 @@ local techHandler = mod:GetModule('techhandler')
 local function ApplyNodeAdditions(techTree, addNodeFunction, nodeName, toAdd)
     logger:PrintDebug("Applying %s Marine%s additions", #toAdd, nodeName)
     for _,v in ipairs(toAdd) do
-        local techId = v[1]
+        local techId
+        local args
+        if type(v) == "table" then
+            techId = v[1]
+            args = unpack(v)
+        else
+            techId = v
+            args = v
+        end
+
         local techName = EnumToString(kTechId, techId) or techId
-        logger:PrintDebug("Adding Marine%s: %s", nodeName, techName)
-        addNodeFunction(techTree, unpack(v))
+        logger:PrintDebug("Adding %s: %s", nodeName, techName)
+        addNodeFunction(techTree, args)
     end
 end
 

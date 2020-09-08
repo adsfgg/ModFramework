@@ -3,18 +3,28 @@ local logger = mod:GetModule('logger')
 local techHandler = mod:GetModule('techhandler')
 
 local function ApplyNodeAdditions(techTree, addNodeFunction, nodeName, toAdd)
-    logger:PrintDebug("Applying %s %s additions", #toAdd, nodeName)
+    logger:PrintDebug("Applying %s Alien%s additions", #toAdd, nodeName)
     for _,v in ipairs(toAdd) do
-        local techId = v[1]
+        local techId
+        local args
+        if type(v) == "table" then
+            techId = v[1]
+            args = unpack(v)
+        else
+            techId = v
+            args = v
+        end
+
         local techName = EnumToString(kTechId, techId) or techId
         logger:PrintDebug("Adding %s: %s", nodeName, techName)
-        addNodeFunction(techTree, unpack(v))
+        addNodeFunction(techTree, args)
     end
 end
 
 local oldInitTechTree = AlienTeam.InitTechTree
 function AlienTeam:InitTechTree()
     oldInitTechTree(self)
+	self.complete = false
 
     ApplyNodeAdditions(self.techTree, self.techTree.AddOrder,                 "Order",                 techHandler:GetOrderToAdd().alien)
     ApplyNodeAdditions(self.techTree, self.techTree.AddBuildNode,             "BuildNode",             techHandler:GetBuildNodeToAdd().alien)
@@ -34,6 +44,5 @@ function AlienTeam:InitTechTree()
     ApplyNodeAdditions(self.techTree, self.techTree.AddSpecial,               "Special",               techHandler:GetSpecialToAdd().alien)
     ApplyNodeAdditions(self.techTree, self.techTree.AddPassive,               "Passive",               techHandler:GetPassiveToAdd().alien)
 
-	self.complete = false
 	self.techTree:SetComplete()
 end
