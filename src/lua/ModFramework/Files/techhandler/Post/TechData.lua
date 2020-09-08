@@ -45,3 +45,7 @@ function BuildTechData()
 
     return techData
 end
+
+-- Finally force the new data to get re-cached
+kCachedTechData = nil
+
