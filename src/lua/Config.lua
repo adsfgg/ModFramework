@@ -15,10 +15,7 @@ function GetModFrameworkConfig%__MODNAME__%()
     
     -- Versioning
     config.versioning = {}
-    config.versioning.majorVersion = 0
-    config.versioning.minorVersion = 1
-    config.versioning.patchVersion = 0
-    config.versioning.preRelease = ""
+    config.versioning.revision = 1
     config.versioning.display = true
     
     -- Tech Handler
