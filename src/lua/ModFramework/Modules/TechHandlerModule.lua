@@ -34,7 +34,7 @@ function TechHandlerModule:Initialize(framework)
 
     -- Create functions
     self:GenerateFunctions("MaterialOffset",        "materialOffset",        false, { ["add"] = false, ["change"] = false, ["remove"] = false })
-    self:GenerateFunctions("TechMapTech",           "techMapTech",           true)
+    self:GenerateFunctions("TechMapTech",           "techMapTech",           true,  { ["add"] = false, ["change"] = true,  ["remove"] = false })
     self:GenerateFunctions("TechMapLine",           "techMapLine",           true,  { ["add"] = false, ["change"] = false, ["remove"] = false })
     self:GenerateFunctions("TechData",              "techData",              false)
     self:GenerateFunctions("Order",                 "order",                 true)
