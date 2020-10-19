@@ -31,14 +31,10 @@ shift
 rm -rf build
 
 echo "Creating project \"$prjName\""
+mkdir -p build/docs/revisions
 mkdir -p build/docugen
-mkdir -p build/docs
 mkdir -p build/src/lua/entry
 mkdir -p build/src/lua/$prjName/ModFramework
-
-touch build/docs/full_changelog.md
-touch build/docs/changes.md
-touch build/docugen/data.db
 
 echo "Moving files..."
 cp -R src/lua/ModFramework build/src/lua/$prjName/
@@ -46,7 +42,11 @@ cp src/lua/Config.lua build/src/lua/$prjName/
 cp src/lua/Modules.lua build/src/lua/$prjName/
 cp src/lua/entry/ModFramework.entry build/src/lua/entry/$prjName.entry
 
+cp -R src/docugen build
+touch build/docugen.db
+
 cp src/docugen.py build/docugen.py
+
 cp src/make.sh build/make.sh
 
 cp LICENSE build/src/lua/$prjName/ModFramework/
@@ -58,7 +58,7 @@ EOL
 
 echo "Renaming target variables"
 # Replace %__MODNAME__%
-find build/src/lua/. -type f -iname "*" -exec sed -i "s/%__MODNAME__%/$prjName/g" {} \;
+find build/src/lua/. build/docugen.py build/docugen/*.py -type f -iname "*" -exec sed -i "s/%__MODNAME__%/$prjName/g" {} \;
 
 echo "Creating mod structure..."
 mkdir build/src/lua/$prjName/Modules
@@ -68,6 +68,11 @@ mkdir -p build/src/lua/$prjName/Modules/Example/Client
 cat << EOL >> build/src/lua/$prjName/Modules/Example/Client/client.lua
 local logger = $prjName:GetModule('logger')
 logger:PrintInfo("Hello, world!")
+EOL
+
+cat << EOL >> build/src/lua/$prjName/Modules/Example/.docugen
+Example.Test
+Example of docugen!
 EOL
 
 echo "Build complete"
