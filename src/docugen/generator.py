@@ -13,6 +13,7 @@ def find_last_mod_version(c, modVersion):
                             LIMIT 1''', [modVersion]).fetchone()
 
     if version == None:
+        verbose_print("Failed to find previous mod version. Defaulting to 0")
         return 0
 
     return int(version[0])
@@ -21,12 +22,7 @@ def generate_change_logs(args):
     conn, c = connect_to_database()
     vanilla_version = args.vanilla_version
     mod_version = args.mod_version
-    prev_mod_version = None
-
-    if args.prev_mod_version:
-        prev_mod_version = args.prev_mod_version
-    else:
-        prev_mod_version = find_last_mod_version(c, mod_version)
+    prev_mod_version = find_last_mod_version(c, mod_version)
 
     verbose_print("Starting docugen for {}".format("%__MODNAME__%"))
     verbose_print("Vanilla Version: {}".format(vanilla_version))
