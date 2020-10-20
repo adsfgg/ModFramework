@@ -2,17 +2,14 @@ import argparse
 from docugen import generator, database, file_scanner, verbose
 
 def gen_changelogs(args):
-    verbose.set_verbose(args.verbose)
     generator.generate_change_logs(args)
     print("Changelogs generated successfully")
 
 def init_table(args):
-    verbose.set_verbose(args.verbose)
     database.initialize_tables(args)
     print("Tables created successfully")
 
 def update_database(args):
-    verbose.set_verbose(args.verbose)
     conn, c = database.connect_to_database()
     file_scanner.scan_for_docugen_files(conn, c, args.update_version, "%__MODNAME__%")
     print("Database updated successfully")
@@ -44,6 +41,7 @@ def main():
     args = parser.parse_args()
 
     if args.command:
+        verbose.set_verbose(args.verbose)
         sub_parser_callbacks[args.command](args)
     elif args:
         parser.print_usage()
