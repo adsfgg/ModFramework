@@ -86,19 +86,42 @@ def create_changelog_stub(conn, c, mod_version, prev_mod_version):
             f.write("\n* No changes for this revision")
         f.write("\n<br/>\n\n")
 
+        generate_nav_bar(f, mod_version, prev_mod_version)
         if prev_mod_version > 0:
-            f.write("[[< prev]](revision{}.md)   Revision {}   [next >]".format(prev_mod_version, mod_version))
-
-            # Update next link in prev version
-            lines = None
-            with open("docs/revisions/revision{}.md".format(prev_mod_version), "r") as f:
-                lines = f.readlines()
-            
-            new_last_line = lines[-1][:-8] + "[[next >]](revision{}.md)".format(mod_version)
-            lines[-1] = new_last_line
-
-            with open("docs/revisions/revision{}.md".format(prev_mod_version), "w") as f:
-                f.writelines(lines)
-        else:
-            f.write("[< prev]   Revision {}   [next >]".format(mod_version))
+            update_prev_nav_bar(mod_version, prev_mod_version)
         
+def generate_nav_bar(f, mod_version, prev_mod_version):
+    f.write('<div style="position:fixed;left:0;bottom:0;width:100%;background-color:#a9a9a9;color:black;text-align:center">\n')
+
+    f.write('<div style="display:inline-block;float:left;padding-left:20%">\n')
+    if prev_mod_version > 0:
+        f.write('<a href="revision{}">\n'.format(prev_mod_version))
+        f.write('[ <- Previous ]\n')
+        f.write('</a>\n')
+    else:
+        f.write('[ <- Previous ]\n')
+    f.write('</div>\n')
+
+    f.write('<div style="display:inline-block;">\n')
+    f.write('Revision {}\n'.format(mod_version))
+    f.write('</div>\n')
+
+    f.write('<div style="display:inline-block;float:right;padding-right:20%">\n')
+    f.write('[ Next -> ]\n')
+    f.write('</div>\n')
+
+    f.write('</div>\n')
+
+def update_prev_nav_bar(mod_version, prev_mod_version):
+    lines = None
+    with open("docs/revisions/revision{}.md".format(prev_mod_version), "r") as f:
+        lines = f.readlines()
+    
+    del lines[-3:]
+    with open("docs/revisions/revision{}.md".format(prev_mod_version), "w") as f:
+        f.writelines(lines)
+        f.write('<a href="revision{}">\n'.format(mod_version))
+        f.write('[ Next -> ]\n')
+        f.write('</a>\n')
+        f.write('</div>\n')
+        f.write('</div>\n')
