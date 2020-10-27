@@ -10,7 +10,7 @@ Script.Load("lua/%__MODNAME__%/ModFramework/Modules/TechHandlerModule.lua")
 
 class 'ModFramework'
 
-local modFrameworkVersion = "1.1.2"
+local modFrameworkVersion = "1.1.3"
 
 function ModFramework:Initialize(vm, filehook)
     self.modName = "%__MODNAME__%"

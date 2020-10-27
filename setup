@@ -54,6 +54,7 @@ cp README.md build/src/lua/$prjName/ModFramework/
 
 cat <<EOL >> build/.gitignore
 build
+docugen/__pycache__
 EOL
 
 echo "Renaming target variables"
