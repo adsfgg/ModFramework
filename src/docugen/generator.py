@@ -50,7 +50,7 @@ def create_changelog_against_vanilla(conn, c, vanilla_version, mod_version):
 
     # Generate markdown text and write to changelog file
     with open("docs/changelog.md", "w+") as f:
-        f.write("# Changes between [{0} revision {1}](revisions/revision{1}.md) and Vanilla Build {2}\n".format("%__MODNAME__%", mod_version, vanilla_version))
+        f.write("# Changes between {0} [revision {1}](revisions/revision{1}.md) and Vanilla Build {2}\n".format("%__MODNAME__%", mod_version, vanilla_version))
         f.write("<br/>\n")
         f.write("\n")
         markdown_generator.generate(f, tree.root_node)
@@ -87,7 +87,7 @@ def create_changelog_stub(conn, c, mod_version, prev_mod_version):
             update_prev_nav_bar(mod_version, prev_mod_version)
         
 def generate_nav_bar(f, mod_version, prev_mod_version):
-    f.write('<div style="position:fixed;left:0;bottom:0;width:100%;background-color:#a9a9a9;color:black;text-align:center">\n')
+    f.write('<div style="position:fixed;left:0;bottom:0;width:100%;background-color:#37373737;color:#FFFFFF;text-align:center">\n')
 
     f.write('<div style="display:inline-block;float:left;padding-left:20%">\n')
     if prev_mod_version > 0:
